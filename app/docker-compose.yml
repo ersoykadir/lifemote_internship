@@ -1,0 +1,48 @@
+services:
+  server:
+    image: python:3.8
+    command: sh -c "pip install -r requirements.txt && python main.py"
+    ports:
+      - 127.0.0.1:3000:3000
+    working_dir: /app/server
+    volumes:
+      - ./server:/app/server
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+    networks:
+      - my-network
+    depends_on:
+      - mysql
+  client:
+    image: python:3.8-alpine
+    command: sh -c "pip install -r requirements.txt && python -u main.py"
+    ports:
+      - 127.0.0.1:5000:5000
+    working_dir: /app/client
+    volumes:
+      - ./client:/app/client
+    environment:
+      SERVER_IP: 127.0.0.1
+      SERVER_PORT: 3000
+    networks:
+      - my-network
+    depends_on:
+      - server
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+    networks:
+      - my-network
+volumes:
+  todo-mysql-data:
+networks:
+  my-network:
