@@ -2,7 +2,7 @@
 
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import crud, models, schemas
@@ -21,12 +21,12 @@ def get_db():
         db.close()
 
 
-@app.post("/items/", response_model=schemas.Item)
+@app.post("/items/", response_model=schemas.Item, status_code=status.HTTP_201_CREATED)
 def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_item(db=db, item=item)
 
 
-@app.get("/items/", response_model=schemas.Item)
+@app.get("/items/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
 def read_item(item_id: int, db: Session = Depends(get_db)):
     db_item = crud.get_item(db, item_id=item_id)
     if db_item is None:
