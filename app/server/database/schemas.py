@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 class ItemBase(BaseModel):
     message: str
+    completed: bool = False
 
 class ItemCreate(ItemBase):
     pass
