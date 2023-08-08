@@ -1,7 +1,7 @@
 services:
   server:
     image: python:3.8
-    command: sh -c "pip install -r requirements.txt && python main.py"
+    command: sh -c "pip install -r requirements.txt && alembic upgrade head && python main.py"
     ports:
       - 127.0.0.1:3000:3000
     working_dir: /app/server
@@ -13,7 +13,7 @@ services:
       MYSQL_HOST: mysql
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
-      MYSQL_DB: todos
+      MYSQL_DB: items
     networks:
       - my-network
     depends_on:
@@ -36,13 +36,13 @@ services:
   mysql:
     image: mysql:8.0
     volumes:
-      - todo-mysql-data:/var/lib/mysql
+      - item-mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: todos
+      MYSQL_DATABASE: items
     networks:
       - my-network
 volumes:
-  todo-mysql-data:
+  item-mysql-data:
 networks:
   my-network:
