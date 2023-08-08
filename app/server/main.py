@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 from database import crud, models, schemas
 from database.db import SessionLocal, engine
 
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
+# The above line is commented out because we are using Alembic to manage our database migrations.
 
 app = FastAPI()
 
