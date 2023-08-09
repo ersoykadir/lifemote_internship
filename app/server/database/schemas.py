@@ -7,11 +7,12 @@ class ItemBase(BaseModel):
     completed: bool = False
 
 class ItemCreate(ItemBase):
-    pass
+    context: Union[str, None]
 
 class Item(ItemBase):
     id: int
     owner_id: int
+    context_id: Union[int, None]
     
     class Config:
         from_attribute = True
@@ -24,6 +25,21 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
+    items: List[Item] = []
+
+    class Config:
+        from_attribute = True
+
+class ContextBase(BaseModel):
+    name: str
+    description: str
+
+class ContextCreate(ContextBase):
+    pass
+
+class Context(ContextBase):
+    id: int
+    owner_id: int
     items: List[Item] = []
 
     class Config:
