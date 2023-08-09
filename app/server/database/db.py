@@ -22,3 +22,28 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+from database import crud
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+def init_db(db: Session = Depends(get_db)):
+    # Create base users
+    if not crud.get_user_by_email(db, name='admin'):
+        crud.create_user(db, email='admin', password='admin')
+    # Can we guarantee that the admin user will always have id 1?
+    # Create base contexts
+    if not crud.get_context_by_name_for_user(db, name='To-Do', user_id=1):
+        crud.create_context(db, name='To-Do', description='Default to-do context', user_id=1)
+    if not crud.get_context_by_name_for_user(db, name='In Progress', user_id=1):
+        crud.create_context(db, name='In Progress', description='Default in progress context', user_id=1)
+    if not crud.get_context_by_name_for_user(db, name='Done', user_id=1):
+        crud.create_context(db, name='Done', description='Default done context', user_id=1)
