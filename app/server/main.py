@@ -13,13 +13,14 @@ from database.db import SessionLocal, engine
 
 app = FastAPI()
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# # Dependency
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
+from database.db import get_db, init_db
 
 
 @app.post("/items/", response_model=schemas.Item, status_code=status.HTTP_201_CREATED)
@@ -67,11 +68,47 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
 def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+    user_id: int, item: schemas.ItemCreate, context: str, db: Session = Depends(get_db)
 ):
-    return crud.create_user_item(db=db, item=item, user_id=user_id)
+    if context is None:
+        # Base context is to-do
+        db_context = crud.get_context_by_name_for_user(db, "To-Do", user_id=user_id)
+        return crud.create_user_item(db=db, item=item, user_id=user_id, context_id=db_context.id)
+    else:
+        db_context = crud.get_context_by_name_for_user(db, context, user_id=user_id)
+        if db_context is not None:
+            return crud.create_user_item(db=db, item=item, user_id=user_id, context_id=db_context.id)
+        else:
+            raise HTTPException(status_code=404, detail="Context not found")
+        
+@app.get("/users/{user_id}/items/", response_model=List[schemas.Item])
+def read_items_for_user(user_id: int, db: Session = Depends(get_db)):
+    db_items = crud.get_items_by_user(db, user_id=user_id)
+    return db_items
+
+@app.post("/users/{user_id}/contexts/", response_model=schemas.Context)
+def create_context_for_user(
+    user_id: int, context: schemas.ContextCreate, db: Session = Depends(get_db)
+):
+    db_context = crud.get_context_by_name_for_user(db, name=context.name, user_id=user_id)
+    if db_context:
+        raise HTTPException(status_code=400, detail="Context already exists")
+    return crud.create_context(db=db, context=context, user_id=user_id)
+
+@app.get("/users/{user_id}/contexts/", response_model=List[schemas.Context])
+def read_contexts_for_user(user_id: int, db: Session = Depends(get_db)):
+    db_contexts = crud.get_contexts_by_user(db, user_id=user_id)
+    return db_contexts
+
+@app.get("/users/{user_id}/contexts/{context}/items/", response_model=List[schemas.Item])
+def read_items_for_user_in_context(user_id: int, context: str, db: Session = Depends(get_db)):
+    db_context = crud.get_context_by_name_for_user(db, context, user_id=user_id)
+    if db_context is None:
+        raise HTTPException(status_code=404, detail="Context not found")
+    return crud.get_items_by_context_for_user(db, user_id=user_id, context_id=db_context.id)
 
 import uvicorn, os
 
 if __name__ == "__main__":
-   uvicorn.run("main:app", host=os.environ.get('HOST'), port=int(os.environ.get('PORT')), reload=True)
+    init_db()
+    uvicorn.run("main:app", host=os.environ.get('HOST'), port=int(os.environ.get('PORT')), reload=True)
