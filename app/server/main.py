@@ -109,6 +109,6 @@ def read_items_for_user_in_context(user_id: int, context: str, db: Session = Dep
 
 import uvicorn, os
 
+init_db()
 if __name__ == "__main__":
-    init_db()
     uvicorn.run("main:app", host=os.environ.get('HOST'), port=int(os.environ.get('PORT')), reload=True)
