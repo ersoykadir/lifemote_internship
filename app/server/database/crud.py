@@ -51,10 +51,10 @@ def get_items_by_user(db: Session, user_id: int):
     return db.query(models.Item).filter(models.Item.owner_id == user_id).all()
 
 def get_items_by_context_for_user(db: Session, user_id: int, context_id: int):
-    return db.query(models.Item).filter(models.Item.owner_id == user_id).all()
+    return db.query(models.Item).filter(models.Item.owner_id == user_id, models.Item.context_id == context_id).all()
 
 def create_context(db: Session, context: schemas.ContextCreate, user_id: int):
-    db_context = models.Item(**context.dict(), owner_id=user_id)
+    db_context = models.Context(**context.dict(), owner_id=user_id)
     db.add(db_context)
     db.commit()
     db.refresh(db_context)
@@ -63,8 +63,8 @@ def create_context(db: Session, context: schemas.ContextCreate, user_id: int):
 def get_context(db: Session, context_id: int):
     return db.query(models.Context).filter(models.Context.id == context_id).first()
 
-def get_context_by_name_for_user(db: Session, context_id: int, user_id: int):
-    return db.query(models.Context).filter(models.Context.id == context_id, models.Context.owner_id == user_id).first()
+def get_context_by_name_for_user(db: Session, context_name: str, user_id: int):
+    return db.query(models.Context).filter(models.Context.name == context_name, models.Context.owner_id == user_id).first()
 
 def get_contexts_by_user(db: Session, user_id: int):
     return db.query(models.Context).filter(models.Context.owner_id == user_id).all()
