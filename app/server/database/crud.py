@@ -35,10 +35,11 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    init_user_contexts(db, user_id=db_user.id)
     return db_user
 
 def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int, context_id: int):
-    db_item = models.Item(**item.dict(), owner_id=user_id, context_id=context_id)
+    db_item = models.Item(message=item.message, completed=item.completed, owner_id=user_id, context_id=context_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -59,6 +60,14 @@ def create_context(db: Session, context: schemas.ContextCreate, user_id: int):
     db.commit()
     db.refresh(db_context)
     return db_context
+
+def init_user_contexts(db: Session, user_id: int):
+    context = schemas.ContextCreate(name='To-Do', description='Default to-do context')
+    create_context(db, context=context, user_id=user_id)
+    context = schemas.ContextCreate(name='In Progress', description='Default in progress context')
+    create_context(db, context=context, user_id=user_id)
+    context = schemas.ContextCreate(name='Done', description='Default done context')
+    create_context(db, context=context, user_id=user_id)
 
 def get_context(db: Session, context_id: int):
     return db.query(models.Context).filter(models.Context.id == context_id).first()
