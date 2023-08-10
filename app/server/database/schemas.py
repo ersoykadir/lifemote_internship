@@ -7,12 +7,12 @@ class ItemBase(BaseModel):
     completed: bool = False
 
 class ItemCreate(ItemBase):
-    context: Union[str, None]
+    context_name: str
 
 class Item(ItemBase):
     id: int
     owner_id: int
-    context_id: Union[int, None]
+    context_id: int
     
     class Config:
         from_attribute = True
