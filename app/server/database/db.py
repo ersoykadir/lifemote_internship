@@ -23,9 +23,20 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+def validate_connection(db):
+    try:
+        conn = db.connection()
+        return True
+    except Exception as e:
+        return False
+
+from fastapi import Depends, HTTPException
 # Dependency
 def get_db():
     db = SessionLocal()
+    if not validate_connection(db):
+        print("Connection to database failed")
+        raise HTTPException(status_code=500, detail="Internal server error")
     try:
         yield db
     finally:
