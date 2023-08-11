@@ -10,11 +10,6 @@ class ContextBase(BaseModel):
     name: str
     description: str
 
-class ItemUpdate(BaseModel):
-    message: Union[str, None]
-    completed: bool = False
-    context_name: Union[str, None]
-
 class ItemCreate(ItemBase):
     context_name: str
 

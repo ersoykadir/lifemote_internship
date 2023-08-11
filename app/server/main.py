@@ -117,7 +117,7 @@ def read_items_for_user_in_context(user_id: int, context: str, db: Session = Dep
 
 
 @app.put("/items/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
-def update_item(item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db)):
+def update_item(item_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.update_item(db=db, item_id=item_id, item=item)
 
 import uvicorn, os

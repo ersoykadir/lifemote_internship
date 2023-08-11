@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from fastapi import HTTPException
 from . import models, schemas
 
 
@@ -13,11 +13,20 @@ def create_item(db: Session, item: schemas.ItemCreate):
     db.refresh(db_item)
     return db_item
 
-def update_item(db: Session, item: schemas.Item, completed: bool):
-    item.completed = completed
+def update_item(db: Session, item_id: int, item: schemas.ItemCreate):
+    db_item = get_item(db, item_id=item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    db_item.message = item.message
+    db_item.completed = item.completed
+    db_context = get_context_by_name_for_user(db, context_name=item.context_name, user_id=db_item.owner_id)
+    if db_context is None:
+        raise HTTPException(status_code=404, detail="Context not found")
+    db_item.context_id = db_context.id
     db.commit()
-    db.refresh(item)
-    return item
+    db.refresh(db_item)
+    return db_item
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
