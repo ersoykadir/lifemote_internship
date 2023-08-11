@@ -40,13 +40,6 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
 
-@app.put("/items/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
-def update_item(item_id: int, completed: bool, db: Session = Depends(get_db)):
-    db_item = crud.get_item(db, item_id=item_id)
-    if db_item is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return crud.update_item(db=db, item=db_item, completed=completed)
-
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -105,12 +98,27 @@ def read_contexts_for_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contexts not found")
     return db_contexts
 
+@app.get("/users/{user_id}/items/", response_model=List[schemas.Item])
+def read_items_for_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db_items = crud.get_items_by_user(db, user_id=user_id)
+    if db_items is None:
+        raise HTTPException(status_code=404, detail="Contexts not found")
+    return db_items
+
 @app.get("/users/{user_id}/contexts/{context}/items/", response_model=List[schemas.Item])
 def read_items_for_user_in_context(user_id: int, context: str, db: Session = Depends(get_db)):
     db_context = crud.get_context_by_name_for_user(db, context, user_id=user_id)
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
     return crud.get_items_by_context_for_user(db, user_id=user_id, context_id=db_context.id)
+
+
+@app.put("/items/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
+def update_item(item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db)):
+    return crud.update_item(db=db, item_id=item_id, item=item)
 
 import uvicorn, os
 
