@@ -27,6 +27,7 @@ class User(Base):
     password = Column(String(64))
 
     items = relationship("Item", back_populates="owner")
+    contexts = relationship("Context", back_populates="owner")
 
 class Context(Base):
     __tablename__ = "contexts"
@@ -40,3 +41,4 @@ class Context(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     items = relationship("Item", back_populates="context")
+    owner = relationship("User", back_populates="contexts")
