@@ -5,6 +5,15 @@ from pydantic import BaseModel
 class ItemBase(BaseModel):
     message: str
     completed: bool = False
+    
+class ContextBase(BaseModel):
+    name: str
+    description: str
+
+class ItemUpdate(BaseModel):
+    message: Union[str, None]
+    completed: bool = False
+    context_name: Union[str, None]
 
 class ItemCreate(ItemBase):
     context_name: str
@@ -12,7 +21,8 @@ class ItemCreate(ItemBase):
 class Item(ItemBase):
     id: int
     owner_id: int
-    context_id: int
+    # context_id: int
+    context: ContextBase
     
     class Config:
         from_attribute = True
@@ -29,10 +39,6 @@ class User(UserBase):
 
     class Config:
         from_attribute = True
-
-class ContextBase(BaseModel):
-    name: str
-    description: str
 
 class ContextCreate(ContextBase):
     pass
