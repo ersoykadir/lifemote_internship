@@ -1,0 +1,17 @@
+from sqlalchemy import Column, Integer, String, UniqueConstraint
+from sqlalchemy.orm import relationship
+
+from database.db import Base
+
+class User(Base):
+    __tablename__ = "users"
+    __table_args__ = (
+        UniqueConstraint('email', name='unique_user_email'),
+        )
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(64), unique=True)
+    password = Column(String(64))
+
+    items = relationship("Item", back_populates="owner")
+    contexts = relationship("Context", back_populates="owner")
