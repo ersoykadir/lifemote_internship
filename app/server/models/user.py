@@ -11,7 +11,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(64), unique=True)
-    password = Column(String(64))
+    name = Column(String(64))
 
     items = relationship("Item", back_populates="owner")
     contexts = relationship("Context", back_populates="owner")
