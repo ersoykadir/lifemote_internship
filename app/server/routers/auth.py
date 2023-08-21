@@ -30,10 +30,9 @@ def oauth2callback(state, code, scope, db: Session = Depends(get_db)):
     user_data, exp = google.get_user_data_from_id_token(credentials)
 
     # Create user
-    db_user = crud.user.get_user_by_email(db, email=user_data["email"])
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    user = crud.user.create_user(db, schemas.UserCreate(**user_data))
+    user = crud.user.get_user_by_email(db, email=user_data["email"])
+    if not user:
+        user = crud.user.create_user(db, schemas.UserCreate(**user_data))
 
     # Create token
     token = auth.create_access_token(data={"sub": user.email}, expire=exp)

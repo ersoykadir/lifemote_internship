@@ -5,8 +5,10 @@ from typing import Annotated
 import os, crud
 
 from jose import JWTError, jwt
-
+from fastapi.security.http import HTTPBearer
 from database.db import get_db
+
+oauth2_scheme = HTTPBearer()
 
 SECRET_KEY = os.environ.get('SECRET_KEY') or None
 ALGORITHM = "HS256"
@@ -23,16 +25,17 @@ def create_access_token(data: dict, expire: datetime = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def decode_access_token(Authorization: str):
+def decode_access_token(token: str):
     try:
-        token = Authorization.split(" ")[1]
+        # token = Authorization.split(" ")[1]
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError as e:
         raise credentials_exception
 
-def validate_token(Authorization: Annotated[str, Header(...)]):
-    payload = decode_access_token(Authorization)
+
+def validate_token(token: Annotated[str, HTTPBearer] = Depends(oauth2_scheme)):
+    payload = decode_access_token(token.credentials)
     email: str = payload.get("sub")
     exp = payload.get("exp")
     if email is None:
