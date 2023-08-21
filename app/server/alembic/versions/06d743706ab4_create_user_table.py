@@ -24,7 +24,7 @@ def upgrade() -> None:
         'users',
         sa.Column('id', sa.Integer(), primary_key=True),
         sa.Column('email', sa.String(64), nullable=False),
-        sa.Column('password', sa.String(64), nullable=True),
+        sa.Column('password', sa.String(64), nullable=False),
     )
     op.create_index(op.f('ix_users_id'), 'users', ['id'])
     op.create_unique_constraint('unique_user_email', 'users', ['email'])
