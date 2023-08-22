@@ -17,13 +17,15 @@ credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
-)    
-   
+)
+
+
 def create_access_token(data: dict, expire: datetime = None):
     to_encode = data.copy()
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
 
 def decode_access_token(token: str):
     try:
@@ -46,9 +48,11 @@ def validate_token(token: Annotated[str, HTTPBearer] = Depends(oauth2_scheme)):
         raise credentials_exception
     return email
 
-def get_current_user(email: str = Depends(validate_token), db: Session = Depends(get_db)):
+
+def get_current_user(
+    email: str = Depends(validate_token), db: Session = Depends(get_db)
+):
     user = crud.user.get_user_by_email(db, email=email)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-    
