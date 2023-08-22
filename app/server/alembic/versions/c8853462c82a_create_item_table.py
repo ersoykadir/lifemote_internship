@@ -20,10 +20,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        'item',
+        'items',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('message', sa.String(64), nullable=False),
     )
+    op.create_index(op.f('ix_items_id'), 'items', ['id'])
 
 def downgrade() -> None:
-    op.drop_table('item')
+    op.drop_index(op.f('ix_items_id'), table_name='items')
+    op.drop_table('items')
