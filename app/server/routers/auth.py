@@ -25,6 +25,10 @@ def register_user():
 # Create a JWT token and return it to user, token expiration should be same as identity providers token expiration
 @router.get("/google/callback")
 def oauth2callback(state, code, scope, db: Session = Depends(get_db)):
+    # Confirm state
+    if state != google.STATE:
+        raise HTTPException(status_code=401, detail="Invalid state")
+
     # Get user data from identity provider
     credentials = google.get_credentials(code)
     user_data, exp = google.get_user_data_from_id_token(credentials)

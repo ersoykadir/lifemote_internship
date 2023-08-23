@@ -11,6 +11,8 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET") or None
 if GOOGLE_CLIENT_ID is None or GOOGLE_CLIENT_SECRET is None:
     raise Exception("GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set")
 
+STATE = "random_state_value"
+
 client_config = {
     "web": {
         "client_id": GOOGLE_CLIENT_ID,
@@ -46,7 +48,8 @@ def get_google_auth_url():
         # access_type='offline',
         # Enable incremental authorization. Recommended as a best practice.
         # include_granted_scopes='true'
-        prompt="consent"
+        state=STATE,
+        prompt="consent",
     )
     return authorization_url
 
