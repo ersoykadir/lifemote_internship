@@ -34,8 +34,11 @@ def read_context(
     user: schemas.User = Depends(get_current_user),
 ):
     db_context = crud.context.get_context(db, context_id=context_id)
-    if db_context is None:
-        raise HTTPException(status_code=404, detail="Context not found")
+    if db_context.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to access this context",
+        )
     return db_context
 
 
@@ -45,9 +48,7 @@ def get_context_by_name(
     db: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
-    db_context = crud.context.get_context_by_name_for_user(
-        db, context_name=context_name, user_id=user.id
-    )
+    db_context = crud.context.get_context_by_name_for_user(db, context_name=context_name, user_id=user.id)
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
     return db_context
@@ -63,6 +64,36 @@ def create_context_for_user(
         db, context_name=context.name, user_id=user.id
     )
     if db_context:
-        raise HTTPException(status_code=400, detail="Context already exists")
+        raise HTTPException(status_code=400, detail="Context already exists!")
     return crud.context.create_context(db=db, context=context, user_id=user.id)
 
+
+@router.put("/{context_id}", response_model=schemas.Context)
+def update_context(
+    context_id: int,
+    context: schemas.ContextCreate,
+    db: Session = Depends(get_db),
+    user: schemas.User = Depends(get_current_user),
+):
+    db_context = crud.context.get_context(db, context_id=context_id)
+    if db_context.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to access this context",
+        )
+    return crud.context.update_context(db=db, context_id=context_id, context=context)
+
+
+@router.delete("/{context_id}", response_model=schemas.Context)
+def delete_context(
+    context_id: int,
+    db: Session = Depends(get_db),
+    user: schemas.User = Depends(get_current_user),
+):
+    db_context = crud.context.get_context(db, context_id=context_id)
+    if db_context.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to access this context",
+        )
+    return crud.context.delete_context(db=db, context_id=context_id)
