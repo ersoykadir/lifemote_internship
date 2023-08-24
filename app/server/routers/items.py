@@ -14,15 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
-def read_item(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud.item.get_item(db, item_id=item_id)
-    if db_item is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return db_item
-
-
-@router.get("/all", response_model=List[schemas.Item])
+@router.get("/all", response_model=List[schemas.Item], status_code=status.HTTP_200_OK)
 def read_items_for_user(
     db: Session = Depends(get_db), user: schemas.User = Depends(get_current_user)
 ):
@@ -30,7 +22,22 @@ def read_items_for_user(
     return db_items
 
 
-@router.post("/", response_model=schemas.Item)
+@router.get("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
+def read_item(
+    item_id: int,
+    db: Session = Depends(get_db),
+    user: schemas.User = Depends(get_current_user),
+):
+    db_item = crud.item.get_item(db, item_id=item_id)
+    if db_item.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to access this item",
+        )
+    return db_item
+
+
+@router.post("/", response_model=schemas.Item, status_code=status.HTTP_201_CREATED)
 def create_item_for_user(
     item: schemas.ItemCreate,
     db: Session = Depends(get_db),
@@ -57,5 +64,27 @@ def create_item_for_user(
 
 
 @router.put("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
-def update_item(item_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    return crud.item.update_item(db=db, item_id=item_id, item=item)
+def update_item(
+    item_id: int,
+    item: schemas.ItemCreate,
+    db: Session = Depends(get_db),
+    user: schemas.User = Depends(get_current_user),
+):
+    db_item = crud.item.get_item(db, item_id=item_id)
+    if db_item.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to access this context",
+        )
+    return crud.item.update_item(db=db, item_id=item_id, item=item, user_id=user.id)
+
+
+@router.delete("/{item_id}", status_code=status.HTTP_200_OK)
+def delete_item(item_id: int, db: Session = Depends(get_db), user: schemas.User = Depends(get_current_user)):
+    db_item = crud.item.get_item(db, item_id=item_id)
+    if db_item.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to access this context",
+        )
+    return crud.item.delete_item(db=db, item_id=item_id)
