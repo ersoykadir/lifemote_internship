@@ -7,7 +7,7 @@ class ItemBase(BaseModel):
     completed: bool = False
     
 class ItemCreate(ItemBase):
-    context_name: str
+    context_name: Union[str, None] = None
 
 class Item(ItemBase):
     id: int
