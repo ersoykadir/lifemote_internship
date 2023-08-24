@@ -22,7 +22,7 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
     return db_item
 
 
-@router.get("/", response_model=List[schemas.Item])
+@router.get("/all", response_model=List[schemas.Item])
 def read_items_for_user(
     db: Session = Depends(get_db), user: schemas.User = Depends(get_current_user)
 ):
