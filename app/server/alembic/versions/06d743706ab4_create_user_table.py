@@ -29,7 +29,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_id'), 'users', ['id'])
     op.create_unique_constraint('unique_user_email', 'users', ['email'])
     op.add_column('items', sa.Column('owner_id', sa.Integer(), nullable=True))
-    op.create_foreign_key('items_owner_fk', 'items', 'users', ['owner_id'], ['id'])
+    op.create_foreign_key('items_owner_fk', 'items', 'users', ['owner_id'], ['id'], ondelete='CASCADE')
     # ### end Alembic commands ###
 
 

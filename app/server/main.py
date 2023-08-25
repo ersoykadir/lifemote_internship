@@ -19,10 +19,6 @@ app.include_router(items.router)
 app.include_router(contexts.router)
 app.include_router(auth.router)
 
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-import crud, models, schemas
-
 
 @app.get("/")
 async def root():

@@ -20,9 +20,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("ALTER TABLE users AUTO_INCREMENT = 1;")
-    op.execute("INSERT INTO users (email, password) VALUES ('admin', 'admin');")
-    
+    op.execute("ALTER TABLE items AUTO_INCREMENT = 1;")
     op.execute("ALTER TABLE contexts AUTO_INCREMENT = 1;")
+    
+    op.execute("INSERT INTO users (email, password) VALUES ('admin', 'admin');")
     op.execute("""  INSERT INTO contexts (name, description, owner_id)
                     VALUES ('To-Do', 'Default To-Do context', 1);""")
     op.execute("""  INSERT INTO contexts (name, description, owner_id)

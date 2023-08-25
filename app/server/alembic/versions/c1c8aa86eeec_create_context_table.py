@@ -30,8 +30,8 @@ def upgrade() -> None:
     op.create_index(op.f('ix_contexts_id'), 'contexts', ['id'])
     op.create_unique_constraint('unique_context_name', 'contexts', ['name', 'owner_id'])
     op.add_column('items', sa.Column('context_id', sa.Integer()))
-    op.create_foreign_key('items_context_fk', 'items', 'contexts', ['context_id'], ['id'])
-    op.create_foreign_key('contexts_owner_fk', 'contexts', 'users', ['owner_id'], ['id'])
+    op.create_foreign_key('items_context_fk', 'items', 'contexts', ['context_id'], ['id'], ondelete='CASCADE')
+    op.create_foreign_key('contexts_owner_fk', 'contexts', 'users', ['owner_id'], ['id'], ondelete='CASCADE')
     # ### end Alembic commands ###
 
 
