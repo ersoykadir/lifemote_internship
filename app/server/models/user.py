@@ -13,5 +13,5 @@ class User(Base):
     email = Column(String(64), unique=True)
     name = Column(String(64))
 
-    items = relationship("Item", back_populates="owner")
-    contexts = relationship("Context", back_populates="owner")
+    items = relationship("Item", back_populates="owner", cascade="all, delete")
+    contexts = relationship("Context", back_populates="owner", cascade="all, delete")

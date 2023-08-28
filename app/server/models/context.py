@@ -14,5 +14,5 @@ class Context(Base):
     description = Column(String(64))
     owner_id = Column(Integer, ForeignKey("users.id"))
 
-    items = relationship("Item", back_populates="context")
+    items = relationship("Item", back_populates="context", cascade="all, delete")
     owner = relationship("User", back_populates="contexts")
