@@ -11,7 +11,7 @@ import requests, os, time
 # 5. Client checks their items
 # 6. Client updates an item
 
-ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZXJzb295NjFAZ21haWwuY29tIiwiZXhwIjoxNjkyODg3NzkzfQ.1ToBWFSfn5yobDdnn4AfZAqXp23hOMX-ik3o2T7kioY'
+ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzbGVlcHlvd2wwMDFAZ21haWwuY29tIiwiZXhwIjoxNjkyOTczNzQ3fQ.99vSBLkj1t5-3nps67e77lbqC4H3dCD9M_rCglxeQko'
 API_URL = 'http://localhost:3000' # Change to server:3000 when running in docker!
 HEADERS = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
 
@@ -107,13 +107,18 @@ def create_item(message, completed, context_name):
     url = f'{API_URL}/items/'
     payload = {'message':message, 'completed':completed, 'context_name':context_name}
     item = request('POST', url, HEADERS, payload, None)
+    if item == None:
+        return
     print(f'Item with message: "{item["message"]}" created')
     print(item)
+    return item
 
 def update_item(item_id, message, completed, context_name):
     url = f'{API_URL}/items/{item_id}'
     payload = {'message':message, 'completed':completed, 'context_name':context_name}
     item = request('PUT', url, HEADERS, payload, None)
+    if item == None:
+        return
     print(f'Item with message: "{item["message"]}" updated')
     print(item)
 
@@ -141,22 +146,75 @@ if __name__ == "__main__":
         time.sleep(5)
 
     get_all_contexts()
-    create_context('Internship', 'Internship')
-    context = get_context_by_name('Internship')
-    # create_item('Refactor Business Logic', False, 'Internship')
-    get_context_items('Internship')
-    # create_item('Presentation first draft', False, 'Internship')
-    # update_item(64, 'Presentation first draft', True, 'To-Do')
-    get_context_items('To-Do')
-    delete_item(65)
-    get_context_items('To-Do')
 
-    # create context and try to delete => WORKS
+    # Create context and add items
+    # context = create_context('Internship', 'Internship')
+    # create_item('Get Multinet Card', False, 'Internship')
+    # create_item('Refactor Business Logic', False, 'Internship')
+    # get_context_items('Internship')
+
+    # Add item to a context and update it, then delete item
+    # get_context_items('To-Do')
+    # item = create_item('Presentation first draft', False, 'Internship')
+    # update_item(item['id'], 'Presentation first draft', True, 'To-Do')
+    # get_context_items('To-Do')
+    # delete_item(item['id'])
+    # get_context_items('To-Do')
+
+    # create context(with no items) and try to delete => WORKS
     # context = create_context('trial1', 'trial1')
     # delete_context(context['id'])
 
-    # create context and add items, then try to delete => FAILS
-    # context = create_context('trial2', 'trial2')
+    # create context and add items, then try to delete context=> WORKS
+    # context1 = create_context('trial2', 'trial2')
     # create_item('trial2 item1', False, 'trial2')
     # create_item('trial2 item2', False, 'trial2')
-    delete_context(context['id'])
+    # get_context_items('trial2')
+    # delete_context(context1['id'])
+
+    # update context => WORKS
+    # update_context(8, 'Internship', 'Internship tasks')
+    # update context that you don't own => WORKS
+    # update_context(1, 'To-Do', 'Internship tasks')
+    # update context name to existing context name => Resolved
+    # update_context(8, 'To-Do', 'Internship tasks')
+
+    # get item details => WORKS
+    # item = get_item(4)
+    # get item details that you don't own => WORKS
+    # item = get_item(9)
+    # get context details => WORKS
+    # context = get_context(8)
+    # get context details that you don't own => WORKS
+    # context = get_context(1)
+
+    # create an item with a context that doesn't exist => WORKS
+    # create_item('trial3 item1', False, 'trial3')
+    # # create an item with a context that you don't own => WORKS 
+    # create_item('trial3 item1', False, 'To-Do')
+
+    # update an item => WORKS
+    # update_item(10, 'trial item updated', True, 'Internship')
+    # update an item that you don't own => WORKS
+    # update_item(9, 'trial3 item1', True, 'To-Do')
+    # update an item with a context that doesn't exist => WORKS
+    # update_item(10, 'trial item updated', True, 'To-D')
+
+    # delete an item => WORKS
+    # item = create_item('trial item', False, 'To-Do')
+    # delete_item(item['id'])
+    # delete an item that you don't own => WORKS
+    # delete_item(9)
+
+    # delete a context => WORKS
+    # context = create_context('Test', 'Test')
+    # context = get_context_by_name('Test')
+    # delete_context(context['id'])
+
+    # delete a context with items => WORKS
+    # create_item('Test item', False, 'Test')
+    # context = get_context_by_name('Test')
+    # delete_context(context['id'])
+    
+    # delete a context that you don't own => WORKS
+    # delete_context(1)
