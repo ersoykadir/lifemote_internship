@@ -48,6 +48,13 @@ def create_item_for_user(
         db_context = crud.context.get_context_by_name_for_user(
             db, context_name="To-Do", user_id=user.id
         )
+        if db_context is None:
+            raise HTTPException(status_code=404, detail="Context not found")
+        if db_context.owner_id != user.id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You do not have permission to access this context",
+            )
         return crud.item.create_user_item(
             db=db, item=item, user_id=user.id, context_id=db_context.id
         )
@@ -55,12 +62,11 @@ def create_item_for_user(
         db_context = crud.context.get_context_by_name_for_user(
             db, context_name=item.context_name, user_id=user.id
         )
-        if db_context is not None:
-            return crud.item.create_user_item(
-                db=db, item=item, user_id=user.id, context_id=db_context.id
-            )
-        else:
+        if db_context is None:
             raise HTTPException(status_code=404, detail="Context not found")
+        return crud.item.create_user_item(
+            db=db, item=item, user_id=user.id, context_id=db_context.id
+        )
 
 
 @router.put("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
@@ -76,7 +82,12 @@ def update_item(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You do not have permission to access this context",
         )
-    return crud.item.update_item(db=db, item_id=item_id, item=item, user_id=user.id)
+    db_context = crud.context.get_context_by_name_for_user(
+        db, context_name=item.context_name, user_id=user.id
+    )
+    if db_context is None:
+        raise HTTPException(status_code=404, detail="Context not found")
+    return crud.item.update_item(db=db, item_id=item_id, item=item)
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_200_OK)

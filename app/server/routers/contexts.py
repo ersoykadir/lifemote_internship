@@ -51,6 +51,7 @@ def get_context_by_name(
     db_context = crud.context.get_context_by_name_for_user(db, context_name=context_name, user_id=user.id)
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
+    # No need to check owner_id because get_context_by_name_for_user gets contexts only for the current user
     return db_context
 
 
@@ -81,6 +82,10 @@ def update_context(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You do not have permission to access this context",
         )
+    check_context = crud.context.get_context_by_name_for_user(db, context_name=context.name, user_id=user.id)
+    if check_context:
+        raise HTTPException(status_code=400, detail="Context already exists!")
+    # update_data = context.dict(exclude_unset=True)
     return crud.context.update_context(db=db, context_id=context_id, context=context)
 
 
