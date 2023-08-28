@@ -9,7 +9,10 @@ from .context import context
 class Item():
 
     def get_item(self, db: Session, item_id: int):
-        return db.query(item_model.Item).filter(item_model.Item.id == item_id).first()
+        item = db.query(item_model.Item).filter(item_model.Item.id == item_id).first()
+        if item is None:
+            raise HTTPException(status_code=404, detail="Item not found")
+        return item
 
     def get_items_by_user(self, db: Session, user_id: int):
         return db.query(item_model.Item).filter(item_model.Item.owner_id == user_id).all()
@@ -26,17 +29,16 @@ class Item():
 
     def update_item(self, db: Session, item_id: int, item: item_schema.ItemCreate):
         db_item = self.get_item(db, item_id=item_id)
-        if db_item is None:
-            raise HTTPException(status_code=404, detail="Item not found")
-
         db_item.message = item.message
         db_item.completed = item.completed
-        db_context = context.get_context_by_name_for_user(db, context_name=item.context_name, user_id=db_item.owner_id)
-        if db_context is None:
-            raise HTTPException(status_code=404, detail="Context not found")
-        db_item.context_id = db_context.id
         db.commit()
         db.refresh(db_item)
+        return db_item
+    
+    def delete_item(self, db: Session, item_id: int):
+        db_item = self.get_item(db, item_id=item_id)
+        db.delete(db_item)
+        db.commit()
         return db_item
     
 item = Item()
