@@ -31,6 +31,7 @@ class Item():
         db_item = self.get_item(db, item_id=item_id)
         db_item.message = item.message
         db_item.completed = item.completed
+        db_item.context_id = context.get_context_by_name_for_user(db, context_name=item.context_name, user_id=db_item.owner_id).id
         db.commit()
         db.refresh(db_item)
         return db_item
