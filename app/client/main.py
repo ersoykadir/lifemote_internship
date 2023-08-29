@@ -1,4 +1,6 @@
-import requests, os, time
+import os
+import requests
+import time
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -6,19 +8,20 @@ ACCESS_TOKEN = os.environ.get('ADMIN_ACCESS_TOKEN')
 API_URL = 'http://localhost:3000' # Change to server:3000 when running in docker!
 HEADERS = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
 
-def request(type, url, headers, payload, params):
-    if type == 'GET':
-        res = requests.get(url, headers=headers, json=payload, params=params)
-    elif type == 'POST':
-        res = requests.post(url, headers=headers, json=payload, params=params)
-    elif type == 'PUT':
-        res = requests.put(url, headers=headers, json=payload, params=params)
-    elif type == 'DELETE':
-        res = requests.delete(url, headers=headers, json=payload, params=params)
+def request(req_type, url, headers, payload, params):
+    '''Make a request to the server'''
+    if req_type == 'GET':
+        res = requests.get(url, headers=headers, json=payload, params=params, timeout=5)
+    elif req_type == 'POST':
+        res = requests.post(url, headers=headers, json=payload, params=params, timeout=5)
+    elif req_type == 'PUT':
+        res = requests.put(url, headers=headers, json=payload, params=params, timeout=5)
+    elif req_type == 'DELETE':
+        res = requests.delete(url, headers=headers, json=payload, params=params, timeout=5)
     else:
         raise Exception('Invalid request type')
     # print(res.status_code, res.json())
-    if res.status_code == 400 or res.status_code == 401 or res.status_code == 404:
+    if res.status_code in [400, 401, 403, 404]:
         print(res.status_code, res.json()['detail'])
         raise Exception(res.status_code, res.json()['detail'])
         # return res.status_code, res.json()
@@ -29,17 +32,20 @@ def request(type, url, headers, payload, params):
     return res.json()
 
 def get_context(context_id):
+    '''Get context details'''
     url = f'{API_URL}/contexts/{context_id}'
     context = requests.get(url, headers=HEADERS).json()
     print(context)
 
 def get_context_by_name(context_name):
+    '''Get context details, given context name'''
     url = f'{API_URL}/contexts'
     params = {'context_name':context_name}
     context = request('GET', url, HEADERS, None, params)
     return context
 
 def get_all_contexts():
+    '''Get all contexts'''
     url = f'{API_URL}/contexts/all'
     contexts = request('GET', url, HEADERS, None, None)
     print('Contexts:')
@@ -49,6 +55,7 @@ def get_all_contexts():
     return [c['name'] for c in contexts]
 
 def create_context(name, description):
+    '''Create a context'''
     url = f'{API_URL}/contexts/'
     payload = {'name':name, 'description':description}
     context = request('POST', url, HEADERS, payload, None)
@@ -57,6 +64,7 @@ def create_context(name, description):
     return context
 
 def update_context(context_id, name, description):
+    '''Update a context'''
     url = f'{API_URL}/contexts/{context_id}'
     payload = {'name':name, 'description':description}
     context = request('PUT', url, HEADERS, payload, None)
@@ -64,17 +72,20 @@ def update_context(context_id, name, description):
     print(context)
 
 def delete_context(context_id):
+    '''Delete a context'''
     url = f'{API_URL}/contexts/{context_id}'
     context = request('DELETE', url, HEADERS, None, None)
     print(f'Context with id: "{context["id"]}" deleted')
     # print(context)
 
 def get_item(item_id):
+    '''Get item details'''
     url = f'{API_URL}/items/{item_id}'
     item = requests.get(url, headers=HEADERS).json()
     print(item)
 
 def get_all_items():
+    '''Get all items'''
     url = f'{API_URL}/items/all'
     items = request('GET', url, HEADERS, None, None)
     print('Items:')
@@ -83,6 +94,7 @@ def get_all_items():
     print(f'Items: "{items}"')
 
 def get_context_items(context_name):
+    '''Get all items in a context'''
     context = get_context_by_name(context_name)
     print(f'Items in context: "{context["name"]}"')
     for item in context['items']:
@@ -90,6 +102,7 @@ def get_context_items(context_name):
     return [item['id'] for item in context['items']]
 
 def create_item(message, completed, context_name):
+    '''Create an item'''
     url = f'{API_URL}/items/'
     payload = {'message':message, 'completed':completed, 'context_name':context_name}
     item = request('POST', url, HEADERS, payload, None)
@@ -98,6 +111,7 @@ def create_item(message, completed, context_name):
     return item
 
 def update_item(item_id, message, completed, context_name):
+    '''Update an item'''
     url = f'{API_URL}/items/{item_id}'
     payload = {'message':message, 'completed':completed, 'context_name':context_name}
     item = request('PUT', url, HEADERS, payload, None)
@@ -106,6 +120,7 @@ def update_item(item_id, message, completed, context_name):
     return item
 
 def delete_item(item_id):
+    '''Delete an item'''
     url = f'{API_URL}/items/{item_id}'
     item = request('DELETE', url, HEADERS, None, None)
     print(f'Item with id: "{item["id"]}" deleted')
@@ -122,8 +137,8 @@ def check_connection():
         else:
             print('Connection failed')
             return False
-    except:
-        print('Connection failed')
+    except Exception as e:
+        print('Connection failed', e)
         return False
 
 def case1():
