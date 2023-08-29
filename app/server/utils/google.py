@@ -76,7 +76,8 @@ def get_user_data_from_id_token(credentials):
         exp = payload.get("exp")
         if not payload.get("email_verified"):
             raise credentials_exception
-
+        if payload.get('email') == 'admin':
+            raise credentials_exception
         return user_data, exp
     except JWTError:
         raise credentials_exception
