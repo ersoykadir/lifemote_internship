@@ -1,21 +1,9 @@
 import requests, os, time
-
-# Flow
-# 1. Client registers with their google account
-# 1.1 Client gets redirected to google
-# 1.2 Client gets an access token
-# 1.3. Client sends request to server with access token
-# 2. Client checks their contexts
-# 3. Client creates a context
-# 4. Client creates an item
-# 5. Client checks their items
-# 6. Client updates an item
-
 from dotenv import load_dotenv
 load_dotenv()
 
 ACCESS_TOKEN = os.environ.get('ADMIN_ACCESS_TOKEN')
-API_URL = 'http://server:3000' # Change to server:3000 when running in docker!
+API_URL = 'http://localhost:3000' # Change to server:3000 when running in docker!
 HEADERS = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
 
 def request(type, url, headers, payload, params):
@@ -32,11 +20,13 @@ def request(type, url, headers, payload, params):
     # print(res.status_code, res.json())
     if res.status_code == 400 or res.status_code == 401 or res.status_code == 404:
         print(res.status_code, res.json()['detail'])
-        return res.status_code, res.json()
+        raise Exception(res.status_code, res.json()['detail'])
+        # return res.status_code, res.json()
     if res.status_code == 500:
         print(res.status_code, res.json()['detail'])
+        raise Exception(res.status_code, res.json()['detail'])
         # return res.status_code, res.json()
-    return res.status_code, res.json()
+    return res.json()
 
 def get_context(context_id):
     url = f'{API_URL}/contexts/{context_id}'
@@ -46,25 +36,22 @@ def get_context(context_id):
 def get_context_by_name(context_name):
     url = f'{API_URL}/contexts'
     params = {'context_name':context_name}
-    status, context = request('GET', url, HEADERS, None, params)
-    if status == 404 and context['detail'] == 'Context not found':
-        return None
+    context = request('GET', url, HEADERS, None, params)
     return context
 
 def get_all_contexts():
     url = f'{API_URL}/contexts/all'
-    status, contexts = request('GET', url, HEADERS, None, None)
+    contexts = request('GET', url, HEADERS, None, None)
     print('Contexts:')
     for c in contexts:
         print("\t", c['name'], c['id'])
     print("------")
+    return [c['name'] for c in contexts]
 
 def create_context(name, description):
     url = f'{API_URL}/contexts/'
     payload = {'name':name, 'description':description}
-    status, context = request('POST', url, HEADERS, payload, None)
-    if status == 400 and context['detail'] == 'Context already exists!':
-        return None
+    context = request('POST', url, HEADERS, payload, None)
     print(f'Context with name: "{context["name"]}" created')
     print(context)
     return context
@@ -73,16 +60,12 @@ def update_context(context_id, name, description):
     url = f'{API_URL}/contexts/{context_id}'
     payload = {'name':name, 'description':description}
     context = request('PUT', url, HEADERS, payload, None)
-    if context == None:
-        return
     print(f'Context with name: "{context["name"]}" updated')
     print(context)
 
 def delete_context(context_id):
     url = f'{API_URL}/contexts/{context_id}'
-    status, context = request('DELETE', url, HEADERS, None, None)
-    if status == 404 and context['detail'] == 'Context not found':
-        return
+    context = request('DELETE', url, HEADERS, None, None)
     print(f'Context with id: "{context["id"]}" deleted')
     # print(context)
 
@@ -109,7 +92,7 @@ def get_context_items(context_name):
 def create_item(message, completed, context_name):
     url = f'{API_URL}/items/'
     payload = {'message':message, 'completed':completed, 'context_name':context_name}
-    status, item = request('POST', url, HEADERS, payload, None)
+    item = request('POST', url, HEADERS, payload, None)
     print(f'Item with message: "{item["message"]}" created')
     print(item)
     return item
@@ -117,30 +100,34 @@ def create_item(message, completed, context_name):
 def update_item(item_id, message, completed, context_name):
     url = f'{API_URL}/items/{item_id}'
     payload = {'message':message, 'completed':completed, 'context_name':context_name}
-    status, item = request('PUT', url, HEADERS, payload, None)
+    item = request('PUT', url, HEADERS, payload, None)
     print(f'Item with message: "{item["message"]}" updated')
     print(item)
     return item
 
 def delete_item(item_id):
     url = f'{API_URL}/items/{item_id}'
-    status, item = request('DELETE', url, HEADERS, None, None)
+    item = request('DELETE', url, HEADERS, None, None)
     print(f'Item with id: "{item["id"]}" deleted')
     print(item)
 
 def check_connection():
+    '''Check if server is running'''
     url = f'{API_URL}/'
     try:
-        status, res = request('GET', url, HEADERS, None, None)
-        if status == 200 and res['message'] == 'Hello World':
+        res = request('GET', url, HEADERS, None, None)
+        if res['message'] == 'Hello World':
             print('Connection successful')
             return True
-    except Exception as e:
+        else:
+            print('Connection failed')
+            return False
+    except:
         print('Connection failed')
         return False
 
 def case1():
-    # Create context and add items
+    '''Create context and add items'''
 
     context_name = 'Internship'
     context_description = 'Internship tasks'
@@ -156,25 +143,22 @@ def case1():
 
     print('Case 1 passed')
 
-    # delete_context(context['id'])
+    delete_context(context['id'])
 
 def case2():
-    # Add item to a context and update it, then delete item
+    '''Add item to a context and update it, then delete item'''
 
-    # item_messages = get_context_items('To-Do')
     context = create_context('Internship', 'Internship')
-    assert context == None
+    assert context['name'] == 'Internship'
 
     item = create_item('Presentation first draft', False, 'Internship')
     updated_item = update_item(item['id'], 'Presentation first draft', True, 'To-Do')
     # print(item)
     # print(updated_item)
     assert updated_item['context_id'] != item['context_id']
-    # get_context_items('To-Do')
     delete_item(item['id'])
     items = get_context_items('To-Do')
     assert item['id'] not in items
-    
     print('Case 2 passed')
 
 if __name__ == "__main__":
@@ -183,11 +167,9 @@ if __name__ == "__main__":
         time.sleep(5)
 
     print(ACCESS_TOKEN)
-    get_all_contexts()
-
-    c = get_context_by_name('Internship')
-    if c:
-        delete_context(c['id'])
+    contexts = get_all_contexts()
+    if 'Internship' in contexts:
+        delete_context(get_context_by_name('Internship')['id'])
 
     case1()
 
