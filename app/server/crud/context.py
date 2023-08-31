@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from models import context as context_model
 from schemas import context as context_schema
 
-class Context():
+class Context:
 
     def get_context(self, db: Session, context_id: int):
         context = db.query(context_model.Context).filter(context_model.Context.id == context_id).first()

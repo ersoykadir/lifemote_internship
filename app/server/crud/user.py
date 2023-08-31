@@ -6,7 +6,7 @@ from schemas import user as user_schema
 
 from .context import context
 
-class User():
+class User:
     def get_user(self, db: Session, user_id: int):
         return db.query(user_model.User).filter(user_model.User.id == user_id).first()
 

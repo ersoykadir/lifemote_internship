@@ -6,7 +6,7 @@ from schemas import item as item_schema
 
 from .context import context
 
-class Item():
+class Item:
 
     def get_item(self, db: Session, item_id: int):
         item = db.query(item_model.Item).filter(item_model.Item.id == item_id).first()
