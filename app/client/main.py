@@ -1,6 +1,6 @@
 import os
-import requests
 import time
+import requests
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -49,8 +49,8 @@ def get_all_contexts():
     url = f'{API_URL}/contexts/all'
     contexts = request('GET', url, HEADERS, None, None)
     print('Contexts:')
-    for c in contexts:
-        print("\t", c['name'], c['id'])
+    for context in contexts:
+        print("\t", context['name'], context['id'])
     print("------")
     return [c['name'] for c in contexts]
 
@@ -81,7 +81,7 @@ def delete_context(context_id):
 def get_item(item_id):
     '''Get item details'''
     url = f'{API_URL}/items/{item_id}'
-    item = requests.get(url, headers=HEADERS).json()
+    item = request('GET', url, HEADERS, None, None)
     print(item)
 
 def get_all_items():
@@ -182,8 +182,8 @@ if __name__ == "__main__":
         time.sleep(5)
 
     print(ACCESS_TOKEN)
-    contexts = get_all_contexts()
-    if 'Internship' in contexts:
+    all_contexts = get_all_contexts()
+    if 'Internship' in all_contexts:
         delete_context(get_context_by_name('Internship')['id'])
 
     case1()
