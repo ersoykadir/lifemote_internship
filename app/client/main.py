@@ -2,7 +2,7 @@ import requests, os, time
 from dotenv import load_dotenv
 load_dotenv()
 
-ACCESS_TOKEN = os.environ.get('ADMIN_ACCESS_TOKEN')
+ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 API_URL = 'http://localhost:3000' # Change to server:3000 when running in docker!
 HEADERS = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
 
