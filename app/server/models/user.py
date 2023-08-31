@@ -6,7 +6,7 @@ from database.db import Base
 class User(Base):
     __tablename__ = "users"
     __table_args__ = (
-        UniqueConstraint('email', name='unique_user_email'),
+        UniqueConstraint("email", name="unique_user_email"),
         )
 
     id = Column(Integer, primary_key=True, index=True)

@@ -29,11 +29,11 @@ class Context:
         return db_context
 
     def init_user_contexts(self, db: Session, user_id: int):
-        context = context_schema.ContextCreate(name='To-Do', description='Default to-do context')
+        context = context_schema.ContextCreate(name="To-Do", description="Default to-do context")
         self.create_context(db, context=context, user_id=user_id)
-        context = context_schema.ContextCreate(name='In Progress', description='Default in progress context')
+        context = context_schema.ContextCreate(name="In Progress", description="Default in progress context")
         self.create_context(db, context=context, user_id=user_id)
-        context = context_schema.ContextCreate(name='Done', description='Default done context')
+        context = context_schema.ContextCreate(name="Done", description="Default done context")
         self.create_context(db, context=context, user_id=user_id)
 
     def update_context(self, db: Session, context_id: int, context: context_schema.ContextCreate):
