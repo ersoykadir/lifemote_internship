@@ -1,3 +1,8 @@
+"""
+Kadir Ersoy
+Internship Project
+Client for testing the API
+"""
 import os
 import time
 import requests
@@ -19,22 +24,19 @@ def request(req_type, url, headers, payload, params):
     elif req_type == 'DELETE':
         res = requests.delete(url, headers=headers, json=payload, params=params, timeout=5)
     else:
-        raise Exception('Invalid request type')
-    # print(res.status_code, res.json())
+        raise ValueError('Invalid request type')
     if res.status_code in [400, 401, 403, 404]:
         print(res.status_code, res.json()['detail'])
-        raise Exception(res.status_code, res.json()['detail'])
-        # return res.status_code, res.json()
+        raise ValueError(res.status_code, res.json()['detail'])
     if res.status_code == 500:
         print(res.status_code, res.json()['detail'])
-        raise Exception(res.status_code, res.json()['detail'])
-        # return res.status_code, res.json()
+        raise ValueError(res.status_code, res.json()['detail'])
     return res.json()
 
 def get_context(context_id):
     '''Get context details'''
     url = f'{API_URL}/contexts/{context_id}'
-    context = requests.get(url, headers=HEADERS).json()
+    context = request('GET', url, HEADERS, None, None)
     print(context)
 
 def get_context_by_name(context_name):
@@ -134,11 +136,10 @@ def check_connection():
         if res['message'] == 'Hello World':
             print('Connection successful')
             return True
-        else:
-            print('Connection failed')
-            return False
-    except Exception as e:
-        print('Connection failed', e)
+        print('Connection failed')
+        return False
+    except ValueError as err:
+        print('Connection failed', err)
         return False
 
 def case1():
@@ -219,7 +220,7 @@ if __name__ == "__main__":
 
     # create an item with a context that doesn't exist => WORKS
     # create_item('trial3 item1', False, 'trial3')
-    # # create an item with a context that you don't own => WORKS 
+    # # create an item with a context that you don't own => WORKS
     # create_item('trial3 item1', False, 'To-Do')
 
     # update an item => WORKS
