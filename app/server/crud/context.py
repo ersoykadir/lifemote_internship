@@ -64,9 +64,9 @@ class Context():
             name='Done',
             description='Default done context'
         )
-        self.create_context(database, context=context_todo, user_id=user_id)
-        self.create_context(database, context=context_inprogress, user_id=user_id)
-        self.create_context(database, context=context_done, user_id=user_id)
+        self.create_context(database, context_data=context_todo, user_id=user_id)
+        self.create_context(database, context_data=context_inprogress, user_id=user_id)
+        self.create_context(database, context_data=context_done, user_id=user_id)
 
     def update_context(
         self,
