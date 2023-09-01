@@ -3,23 +3,29 @@ from fastapi import HTTPException
 
 from models import context as context_model
 from schemas import context as context_schema
-
 class Context():
 
     def get_context(self, db: Session, context_id: int):
-        context = db.query(context_model.Context).filter(context_model.Context.id == context_id).first()
+        context = db.query(context_model.Context).filter(
+            context_model.Context.id == context_id
+        ).first()
         if context is None:
             raise HTTPException(status_code=404, detail="Context not found")
         return context
 
     def get_context_by_name_for_user(self, db: Session, context_name: str, user_id: int):
-        context = db.query(context_model.Context).filter(context_model.Context.name == context_name, context_model.Context.owner_id == user_id).first()
+        context = db.query(context_model.Context).filter(
+            context_model.Context.name == context_name, 
+            context_model.Context.owner_id == user_id
+        ).first()
         # if context is None:
         #     raise HTTPException(status_code=404, detail="Context not found")
         return context
 
     def get_contexts_by_user(self, db: Session, user_id: int):
-        return db.query(context_model.Context).filter(context_model.Context.owner_id == user_id).all()
+        return db.query(context_model.Context).filter(
+            context_model.Context.owner_id == user_id
+            ).all()
 
     def create_context(self, db: Session, context: context_schema.ContextCreate, user_id: int):
         db_context = context_model.Context(**context.dict(), owner_id=user_id)
