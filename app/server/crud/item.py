@@ -35,13 +35,13 @@ class Item():
     def create_user_item(
         self,
         database: Session,
-        item: item_schema.ItemCreate,
+        item_create: item_schema.ItemCreate,
         user_id: int, context_id: int
     ):
         """Create item"""
         db_item = item_model.Item(
-            message=item.message,
-            completed=item.completed,
+            message=item_create.message,
+            completed=item_create.completed,
             owner_id=user_id,
             context_id=context_id
         )
