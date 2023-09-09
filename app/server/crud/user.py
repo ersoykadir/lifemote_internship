@@ -1,3 +1,8 @@
+"""
+Kadir Ersoy
+Internship Project
+User CRUD
+"""
 from sqlalchemy.orm import Session
 
 from models import user as user_model
@@ -28,5 +33,5 @@ class User():
         database.refresh(db_user)
         context.init_user_contexts(database, user_id=db_user.id)
         return db_user
-    
+
 user = User()

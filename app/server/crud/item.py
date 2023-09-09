@@ -50,13 +50,13 @@ class Item():
         database.refresh(db_item)
         return db_item
 
-    def update_item(self, database: Session, item_id: int, item: item_schema.ItemCreate):
+    def update_item(self, database: Session, item_id: int, item_update: item_schema.ItemCreate):
         """Update item"""
         db_item = self.get_item(database, item_id=item_id)
-        db_item.message = item.message
-        db_item.completed = item.completed
+        db_item.message = item_update.message
+        db_item.completed = item_update.completed
         db_item.context_id = context.get_context_by_name_for_user(
-            database, context_name=item.context_name, user_id=db_item.owner_id
+            database, context_name=item_update.context_name, user_id=db_item.owner_id
         ).id
         database.commit()
         database.refresh(db_item)
