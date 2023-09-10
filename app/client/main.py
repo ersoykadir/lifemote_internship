@@ -15,16 +15,7 @@ HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
 def request(req_type, url, headers, payload, params):
     '''Make a request to the server'''
-    if req_type == "GET":
-        res = requests.get(url, headers=headers, json=payload, params=params, timeout=5)
-    elif req_type == "POST":
-        res = requests.post(url, headers=headers, json=payload, params=params, timeout=5)
-    elif req_type == "PUT":
-        res = requests.put(url, headers=headers, json=payload, params=params, timeout=5)
-    elif req_type == "DELETE":
-        res = requests.delete(url, headers=headers, json=payload, params=params, timeout=5)
-    else:
-        raise ValueError("Invalid request type")
+    res = getattr(requests, req_type.lower())(url, headers=headers, json=payload, params=params, timeout=5)
     if res.status_code in [400, 401, 403, 404]:
         print(res.status_code, res.json()["detail"])
         raise ValueError(res.status_code, res.json()["detail"])
