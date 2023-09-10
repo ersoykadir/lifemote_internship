@@ -1,3 +1,8 @@
+"""
+Kadir Ersoy
+Internship Project
+Google Auth Utils
+"""
 import os
 import google_auth_oauthlib.flow
 
@@ -9,7 +14,7 @@ GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID") or None
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET") or None
 
 if GOOGLE_CLIENT_ID is None or GOOGLE_CLIENT_SECRET is None:
-    raise Exception("GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set")
+    raise ValueError("GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set")
 
 STATE = "random_state_value"
 
