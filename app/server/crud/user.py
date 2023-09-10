@@ -10,7 +10,7 @@ from schemas import user as user_schema
 
 from .context import context
 
-class User():
+class User:
     """User CRUD"""
 
     def get_user(self, database: Session, user_id: int):

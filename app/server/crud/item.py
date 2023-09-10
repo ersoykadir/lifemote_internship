@@ -11,7 +11,7 @@ from schemas import item as item_schema
 
 from .context import context
 
-class Item():
+class Item:
     """Item CRUD"""
 
     def get_item(self, database: Session, item_id: int):

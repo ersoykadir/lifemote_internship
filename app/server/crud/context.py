@@ -8,7 +8,7 @@ from fastapi import HTTPException
 
 from models import context as context_model
 from schemas import context as context_schema
-class Context():
+class Context:
     """Context CRUD"""
 
     def get_context(self, database: Session, context_id: int):
@@ -53,16 +53,16 @@ class Context():
         """Create default contexts for user"""
 
         context_todo = context_schema.ContextBase(
-            name='To-Do',
-            description='Default to-do context'
+            name="To-Do",
+            description="Default to-do context"
         )
         context_inprogress = context_schema.ContextBase(
-            name='In Progress',
-            description='Default in progress context'
+            name="In Progress",
+            description="Default in progress context"
         )
         context_done = context_schema.ContextBase(
-            name='Done',
-            description='Default done context'
+            name="Done",
+            description="Default done context"
         )
         self.create_context(database, context_data=context_todo, user_id=user_id)
         self.create_context(database, context_data=context_inprogress, user_id=user_id)
