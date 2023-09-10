@@ -25,9 +25,9 @@ class User():
         """Get all users"""
         return database.query(user_model.User).offset(skip).limit(limit).all()
 
-    def create_user(self, database: Session, user_create: user_schema.UserCreate):
+    def create_user(self, database: Session, user_data: user_schema.UserBase):
         """Create user"""
-        db_user = user_model.User(email=user_create.email, name=user_create.name)
+        db_user = user_model.User(email=user_data.email, name=user_data.name)
         database.add(db_user)
         database.commit()
         database.refresh(db_user)

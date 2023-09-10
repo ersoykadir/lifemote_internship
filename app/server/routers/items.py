@@ -59,7 +59,7 @@ def create_item_for_user(
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
     return crud.item.create_user_item(
-        database, item=item, user_id=user.id, context_id=db_context.id
+        database, item_data=item, user_id=user.id, context_id=db_context.id
     )
 
 
@@ -83,7 +83,7 @@ def update_item(
     )
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
-    return crud.item.update_item(database, item_id=item_id, item=item)
+    return crud.item.update_item(database, item_id=item_id, item_data=item)
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_200_OK)

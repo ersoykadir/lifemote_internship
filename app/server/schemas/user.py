@@ -20,4 +20,5 @@ class User(UserBase):
     contexts: List[Context] = []
 
     class Config:
+        """Config"""
         from_attribute = True

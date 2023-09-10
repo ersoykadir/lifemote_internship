@@ -41,7 +41,7 @@ def oauth2callback(state, code, database: Session = Depends(get_db)):
     # Create user
     user = crud.user.get_user_by_email(database, email=user_data["email"])
     if not user:
-        user = crud.user.create_user(database, schemas.UserCreate(**user_data))
+        user = crud.user.create_user(database, schemas.UserBase(**user_data))
 
     # Create token
     token = auth.create_access_token(data={"sub": user.email}, expire=exp)

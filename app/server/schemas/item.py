@@ -22,4 +22,5 @@ class Item(ItemBase):
     context_id: int
 
     class Config:
+        """Config"""
         from_attribute = True

@@ -39,7 +39,7 @@ class Context():
     def create_context(
         self,
         database: Session,
-        context_data: context_schema.ContextCreate,
+        context_data: context_schema.ContextBase,
         user_id: int
     ):
         """Create context"""
@@ -52,15 +52,15 @@ class Context():
     def init_user_contexts(self, database: Session, user_id: int):
         """Create default contexts for user"""
 
-        context_todo = context_schema.ContextCreate(
+        context_todo = context_schema.ContextBase(
             name='To-Do',
             description='Default to-do context'
         )
-        context_inprogress = context_schema.ContextCreate(
+        context_inprogress = context_schema.ContextBase(
             name='In Progress',
             description='Default in progress context'
         )
-        context_done = context_schema.ContextCreate(
+        context_done = context_schema.ContextBase(
             name='Done',
             description='Default done context'
         )
@@ -72,7 +72,7 @@ class Context():
         self,
         database: Session,
         context_id: int,
-        context_data: context_schema.ContextCreate
+        context_data: context_schema.ContextBase
     ):
         """Update context"""
         db_context = self.get_context(database, context_id=context_id)

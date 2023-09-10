@@ -19,4 +19,5 @@ class Context(ContextBase):
     items: List[Item] = []
 
     class Config:
+        """Config"""
         from_attribute = True
