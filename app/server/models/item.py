@@ -1,10 +1,15 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, UniqueConstraint
+"""
+Kadir Ersoy
+Internship Project
+Item Model
+"""
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from database.db import Base
 
-
 class Item(Base):
+    """Item Model"""
     __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -1,10 +1,15 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+"""
+Kadir Ersoy
+Internship Project
+Auth Router
+"""
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-import schemas, crud
+import crud
+import schemas
 from database.db import get_db
-from fastapi.responses import RedirectResponse
 from utils import google, auth
 
 router = APIRouter(
@@ -13,18 +18,18 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
 @router.get("/google/")
 def register_user():
-    # Instead of requesting user data, we redirect user to identity provider
+    """Redirects user to google login page"""
     return RedirectResponse(url=google.get_google_auth_url())
-
 
 # Get user data from identity provider using the code
 # Save user data in database,
-# Create a JWT token and return it to user, token expiration should be same as identity providers token expiration
+# Create a JWT token and return it to user,
+# token expiration can be same as identity providers token expiration
 @router.get("/google/callback")
-def oauth2callback(state, code, scope, db: Session = Depends(get_db)):
+def oauth2callback(state, code, database: Session = Depends(get_db)):
+    """Get user data from identity provider using the code"""
     # Confirm state
     if state != google.STATE:
         raise HTTPException(status_code=401, detail="Invalid state")
@@ -34,9 +39,9 @@ def oauth2callback(state, code, scope, db: Session = Depends(get_db)):
     user_data, exp = google.get_user_data_from_id_token(credentials)
 
     # Create user
-    user = crud.user.get_user_by_email(db, email=user_data["email"])
+    user = crud.user.get_user_by_email(database, email=user_data["email"])
     if not user:
-        user = crud.user.create_user(db, schemas.UserCreate(**user_data))
+        user = crud.user.create_user(database, schemas.UserBase(**user_data))
 
     # Create token
     token = auth.create_access_token(data={"sub": user.email}, expire=exp)
