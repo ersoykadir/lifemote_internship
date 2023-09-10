@@ -23,4 +23,6 @@ jobs:
       run: export TAG=${{github.ref_name}}
       
     - name: Build the Docker image
-      run: docker compose up
+      run: |
+        cd app
+        docker compose up
