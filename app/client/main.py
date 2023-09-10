@@ -15,7 +15,8 @@ HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
 def request(req_type, url, headers, payload, params):
     '''Make a request to the server'''
-    res = getattr(requests, req_type.lower())(url, headers=headers, json=payload, params=params, timeout=5)
+    req = getattr(requests, req_type.lower())
+    res = req(url, headers=headers, json=payload, params=params)
     if res.status_code in [400, 401, 403, 404]:
         print(res.status_code, res.json()["detail"])
         raise ValueError(res.status_code, res.json()["detail"])
