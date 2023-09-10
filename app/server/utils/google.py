@@ -76,7 +76,7 @@ def get_user_data_from_id_token(credentials):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        token = credentials._id_token
+        token = credentials.id_token
         payload = jwt_google.decode(token, verify=False)
         user_data = {
             "name": payload.get("name"),

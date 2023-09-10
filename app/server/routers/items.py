@@ -53,30 +53,14 @@ def create_item_for_user(
 ):
     """Create an item for a user"""
 
-    if item.context_name is None:
-        # Base context is to-do
-        db_context = crud.context.get_context_by_name_for_user(
-            database, context_name="To-Do", user_id=user.id
-        )
-        if db_context is None:
-            raise HTTPException(status_code=404, detail="Context not found")
-        if db_context.owner_id != user.id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="You do not have permission to access this context",
-            )
-        return crud.item.create_user_item(
-            database, item=item, user_id=user.id, context_id=db_context.id
-        )
-    else:
-        db_context = crud.context.get_context_by_name_for_user(
-            database, context_name=item.context_name, user_id=user.id
-        )
-        if db_context is None:
-            raise HTTPException(status_code=404, detail="Context not found")
-        return crud.item.create_user_item(
-            database, item=item, user_id=user.id, context_id=db_context.id
-        )
+    db_context = crud.context.get_context_by_name_for_user(
+        database, context_name=item.context_name, user_id=user.id
+    )
+    if db_context is None:
+        raise HTTPException(status_code=404, detail="Context not found")
+    return crud.item.create_user_item(
+        database, item=item, user_id=user.id, context_id=db_context.id
+    )
 
 
 @router.put("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
