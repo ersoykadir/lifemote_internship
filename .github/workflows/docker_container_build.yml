@@ -1,0 +1,24 @@
+name: Build Docker Container 
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Used for naming docker container'
+        required: true
+        type: string     
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Export tag to environment variable
+      run: export TAG=${{github.ref_name}}
+      
+    - name: Build the Docker image
+      run: docker compose up
