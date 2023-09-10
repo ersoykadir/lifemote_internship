@@ -12,10 +12,6 @@ class ContextBase(BaseModel):
     name: str
     description: str
 
-class ContextCreate(ContextBase):
-    """Context create schema"""
-    pass
-
 class Context(ContextBase):
     """Context schema"""
     id: int

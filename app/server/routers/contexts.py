@@ -1,8 +1,14 @@
+"""
+Kadir Ersoy
+Internship Project
+Context Router
+"""
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-import schemas, crud
+import crud
+import schemas
 from database.db import get_db
 from utils.auth import get_current_user, validate_token
 
@@ -18,6 +24,7 @@ router = APIRouter(
 def read_contexts_for_user(
     database: Session = Depends(get_db), user: schemas.User = Depends(get_current_user)
 ):
+    """Get all contexts for a user"""
     db_user = crud.user.get_user(database, user_id=user.id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -33,6 +40,7 @@ def read_context(
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
+    """Get a specific context by id"""
     db_context = crud.context.get_context(database, context_id=context_id)
     if db_context.owner_id != user.id:
         raise HTTPException(
@@ -48,6 +56,7 @@ def get_context_by_name(
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
+    """Get a specific context by name"""
     db_context = crud.context.get_context_by_name_for_user(
         database, context_name=context_name, user_id=user.id
     )
@@ -64,6 +73,7 @@ def create_context_for_user(
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
+    """Create a context for a user"""
     db_context = crud.context.get_context_by_name_for_user(
         database, context_name=context.name, user_id=user.id
     )
@@ -79,13 +89,16 @@ def update_context(
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
+    """Update a context"""
     db_context = crud.context.get_context(database, context_id=context_id)
     if db_context.owner_id != user.id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You do not have permission to access this context",
         )
-    check_context = crud.context.get_context_by_name_for_user(database, context_name=context.name, user_id=user.id)
+    check_context = crud.context.get_context_by_name_for_user(
+        database, context_name=context.name, user_id=user.id
+    )
     if check_context:
         raise HTTPException(status_code=400, detail="Context already exists!")
     # update_data = context.dict(exclude_unset=True)
@@ -98,6 +111,7 @@ def delete_context(
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
+    """Delete a context"""
     db_context = crud.context.get_context(database, context_id=context_id)
     if db_context.owner_id != user.id:
         raise HTTPException(

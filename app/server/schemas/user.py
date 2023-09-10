@@ -13,10 +13,6 @@ class UserBase(BaseModel):
     email: str
     name: str
 
-class UserCreate(UserBase):
-    """User create schema"""
-    pass
-
 class User(UserBase):
     """User schema"""
     id: int
