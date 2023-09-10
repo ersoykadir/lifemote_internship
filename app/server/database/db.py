@@ -5,7 +5,6 @@ Database
 """
 import os
 from dotenv import load_dotenv
-load_dotenv()
 
 from fastapi import HTTPException
 from sqlalchemy import create_engine
@@ -13,12 +12,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 
+load_dotenv()
 host = os.getenv('MYSQL_HOST')
 user = os.getenv('MYSQL_USER')
 password = os.getenv('MYSQL_PASSWORD')
-database = os.getenv('MYSQL_DB')
+db_name = os.getenv('MYSQL_DB')
 
-SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:3306/{database}"
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:3306/{db_name}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL

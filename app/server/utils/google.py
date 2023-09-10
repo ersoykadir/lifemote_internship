@@ -1,8 +1,8 @@
-import google.oauth2.credentials
+import os
 import google_auth_oauthlib.flow
-from google.auth import jwt as jwt_google
-import json, os
+
 from jose import JWTError
+from google.auth import jwt as jwt_google
 from fastapi import HTTPException, status
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID") or None
@@ -37,12 +37,14 @@ flow = google_auth_oauthlib.flow.Flow.from_client_config(
 
 
 def get_google_auth_url():
+    """Acquire google auth url for redirecting user to google login page"""
+
     # Indicate where the API server will redirect the user after the user completes
     flow.redirect_uri = "http://localhost:3000/auth/google/callback"
 
     # Generate URL for request to Google's OAuth 2.0 server.
     # Use kwargs to set optional request parameters.
-    authorization_url, state = flow.authorization_url(
+    authorization_url = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
         # re-prompting the user for permission. Recommended for web server apps.
         # access_type='offline',
@@ -55,12 +57,14 @@ def get_google_auth_url():
 
 
 def get_credentials(code):
+    """Get credentials from google using the authorization code"""
     flow.fetch_token(code=code)
     credentials = flow.credentials
     return credentials
 
 
 def get_user_data_from_id_token(credentials):
+    """Get user data from id token"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -79,5 +83,5 @@ def get_user_data_from_id_token(credentials):
         if payload.get('email') == 'admin':
             raise credentials_exception
         return user_data, exp
-    except JWTError:
-        raise credentials_exception
+    except JWTError as exc:
+        raise credentials_exception from exc
