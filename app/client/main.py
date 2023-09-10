@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
     # create an item with a context that doesn"t exist => WORKS
     # create_item("trial3 item1", False, "trial3")
-    # # create an item with a context that you don"t own => WORKS 
+    # # create an item with a context that you don"t own => WORKS
     # create_item("trial3 item1", False, "To-Do")
 
     # update an item => WORKS
