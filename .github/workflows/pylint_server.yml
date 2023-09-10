@@ -23,4 +23,4 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         cd app/server
-        pylint $(git ls-files '*.py' | grep -v 'alembic')
+        pylint --rcfile=../.pylintrc $(git ls-files '*.py' | grep -v 'alembic')
