@@ -1,3 +1,8 @@
+"""
+Kadir Ersoy
+Internship Project
+Logging Config
+"""
 LOGGER_NAME: str = "mycoolapp"
 LOG_FORMAT: str = "%(levelprefix)s | %(asctime)s | %(message)s"
 LOG_LEVEL: str = "DEBUG"
