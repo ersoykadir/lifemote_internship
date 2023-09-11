@@ -10,6 +10,18 @@ import uvicorn
 from fastapi import FastAPI
 from routers import users, items, contexts, auth
 
+import logging
+from logging.config import dictConfig
+from config.logging_conf import log_config
+
+dictConfig(log_config)
+logger = logging.getLogger("mycoolapp")
+
+logger.info("Dummy Info")
+logger.error("Dummy Error")
+logger.debug("Dummy Debug")
+logger.warning("Dummy Warning")
+
 app = FastAPI()
 
 app.include_router(users.router)
