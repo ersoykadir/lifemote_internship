@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
-API_URL = "http://localhost:3000" # Change to server:3000 when running in docker!
+API_URL = "http://server:3000" # Change to server:3000 when running in docker!
 HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
 def request(req_type, url, headers, payload, params):
@@ -130,12 +130,16 @@ def check_connection():
             return True
         print("Connection failed")
         return False
-    except ValueError as err:
+    except Exception as err:
         print("Connection failed", err)
         return False
 
 def case1():
     """Create context and add items"""
+
+    all_contexts = get_all_contexts()
+    if "Internship" in all_contexts:
+        delete_context(get_context_by_name("Internship")["id"])
 
     context_name = "Internship"
     context_description = "Internship tasks"
@@ -174,14 +178,19 @@ if __name__ == "__main__":
     while not check_connection():
         time.sleep(5)
 
-    print(ACCESS_TOKEN)
-    all_contexts = get_all_contexts()
-    if "Internship" in all_contexts:
-        delete_context(get_context_by_name("Internship")["id"])
-
-    case1()
-
-    case2()
+    while True:
+        print("1. Create context and add items")
+        print("2. Add item to a context and update it, then delete item")
+        print("3. Exit")
+        choice = input("Enter choice: ")
+        if choice == "1":
+            case1()
+        elif choice == "2":
+            case2()
+        elif choice == "3":
+            break
+        else:
+            print("Invalid choice")
 
     # create context(with no items) and try to delete => WORKS
     # context = create_context("trial1", "trial1")
