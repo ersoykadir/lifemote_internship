@@ -11,18 +11,73 @@ name: Build Docker Container
 #         required: true
 #         type: string     
 
+# job: Three containers
+# build three containers check if all running
+# from docker ps?
+# convert client to run cases on user input
+
+# job: Case1
+# depends on threeCon
+# run test case 1
+
+# job: Case2
+# depends on case 1
+
+# job: versioning
+# depends on case 2
+# if all goes well, build images and push to dockerhub
+
+# job: sent message to slack
+# parallel to versioning
+
 on: [push]
 
 jobs:
-  build:
+  triCon:
+    name: Checking three containers running
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Export tag to environment variable
-      run: export TAG=${{github.ref_name}}
-      
-    - name: Build the Docker image
+    - name: Run docker compose
       run: |
         cd app
         docker compose up
+    - name: List running docker containers
+      id: list_dockers
+      run: echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
+    - name: Check results
+      run: |
+        if [[ ${{ steps.list_dockers.outputs.count }} == 3 ]]; then exit 0; else exit 1; fi
+  
+  case1:
+    name: Trying case1 from client
+    needs: triCon
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Give input '1' to client docker
+      run: |
+        docker attach app-client-1
+        echo '1'# not sure if this works
+    
+  case2:
+    name: Trying case2 from client
+    needs: case1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Give input '2' to client docker
+      run: |
+        docker attach app-client-1
+        echo '2'# not sure if this works
+  
+  versioning:
+    name: Builds images and pushes them to dockerhub
+    needs: case2
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build image for client
+      run: |
+        cd app/client
+        docker build -t client:${{github.ref_name}} # needs to check if workflow run from tag or manual 
