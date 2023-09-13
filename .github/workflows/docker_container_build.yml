@@ -57,6 +57,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Give input '1' to client docker
       run: |
+        docker ps --format '{{.Names}}'
         docker attach app-client-1
         echo '1'# not sure if this works
     
