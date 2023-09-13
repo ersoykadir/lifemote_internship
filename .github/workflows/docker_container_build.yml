@@ -41,14 +41,14 @@ jobs:
     - name: Run docker compose
       run: |
         cd app
-        docker compose up
+        docker compose up --detach
     - name: List running docker containers
       id: list_dockers
       run: echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
     - name: Check results
       run: |
         if [[ ${{ steps.list_dockers.outputs.count }} == 3 ]]; then exit 0; else exit 1; fi
-  
+        
   case1:
     name: Trying case1 from client
     needs: triCon
