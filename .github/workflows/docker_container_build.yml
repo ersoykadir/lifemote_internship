@@ -47,7 +47,7 @@ jobs:
       run: echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
     - name: Check results
       run: |
-        if [[ ${{ steps.list_dockers.outputs.count }} == 3 ]]; then exit 0; else exit 1; fi
+        if [[ ${{ steps.list_dockers.outputs.count }} == 2 ]]; then exit 0; else exit 1; fi
         
   case1:
     name: Trying case1 from client
@@ -55,13 +55,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Wake containers up
+      run: docker compose up --detach
     - name: List existing containers
-      run: docker ps --format '{{.Names}}'
+      run: echo $(docker ps --format '{{.Names}}')
+    - name: Setup test_case number for client docker
+      run: export TEST_CASE=1
     - name: Give input '1' to client docker
       run: |
-        docker attach app-client-1
-        echo '1'# not sure if this works
-    
+        docker build -t app-client:latest .
+        docker run --name app-client-1 \
+          -dp 0.0.0.0:5000:5000 \
+          --network app_my-network \
+          -e SERVER_IP=0.0.0.0 \
+          -e SERVER_PORT=3000 \
+          app-client:latest
+    - name: Check if client was successful
+      run: |
+        export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
+        export result=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        if [[ ${{ result }} == 0 ]]; then exit 0; else exit 1; fi
+
   case2:
     name: Trying case2 from client
     needs: case1
