@@ -1,7 +1,6 @@
 services:
   server:
-    image: python:3.10
-    command: sh -c "pip install -r requirements.txt && alembic upgrade head && python main.py"
+    build: ./server
     ports:
       - 127.0.0.1:3000:3000
     working_dir: /app/server
@@ -21,23 +20,6 @@ services:
       - my-network
     depends_on:
       - mysql
-  client:
-    image: python:3.10-alpine
-    command: sh -c "pip install -r requirements.txt && python -u main.py"
-    ports:
-      - 127.0.0.1:5000:5000
-    working_dir: /app/client
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./client:/app/client
-    environment:
-      SERVER_IP: 127.0.0.1
-      SERVER_PORT: 3000
-    networks:
-      - my-network
-    depends_on:
-      - server
   mysql:
     image: mysql:8.0
     volumes:
@@ -51,3 +33,20 @@ volumes:
   item-mysql-data:
 networks:
   my-network:
+
+  # client:
+  #   build: ./client
+  #   ports:
+  #     - 127.0.0.1:5000:5000
+  #   working_dir: /app/client
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - ./client:/app/client
+  #   environment:
+  #     SERVER_IP: 127.0.0.1
+  #     SERVER_PORT: 3000
+  #   networks:
+  #     - my-network
+  #   depends_on:
+  #     - server
