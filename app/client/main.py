@@ -4,6 +4,7 @@ Internship Project
 Client for testing the API
 """
 import os
+import sys
 import time
 import requests
 from dotenv import load_dotenv
@@ -177,20 +178,29 @@ if __name__ == "__main__":
     print("Trying to connect to server")
     while not check_connection():
         time.sleep(5)
-
-    while True:
-        print("1. Create context and add items")
-        print("2. Add item to a context and update it, then delete item")
-        print("3. Exit")
-        choice = input("Enter choice: ")
-        if choice == "1":
-            case1()
-        elif choice == "2":
-            case2()
-        elif choice == "3":
-            break
-        else:
-            print("Invalid choice")
+    
+    # Test case from environment variable
+    TEST_CASE = os.environ.get("TEST_CASE")
+    if TEST_CASE == "1":
+        case1()
+    elif TEST_CASE == "2":
+        case2()
+    else:
+        print("Invalid test case given, defaulting to case 1")
+        case1()
+    # while True:
+    #     print("1. Create context and add items")
+    #     print("2. Add item to a context and update it, then delete item")
+    #     print("3. Exit")
+    #     choice = input("Enter choice: ")
+    #     if choice == "1":
+    #         case1()
+    #     elif choice == "2":
+    #         case2()
+    #     elif choice == "3":
+    #         break
+    #     else:
+    #         print("Invalid choice")
 
     # create context(with no items) and try to delete => WORKS
     # context = create_context("trial1", "trial1")

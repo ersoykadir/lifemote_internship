@@ -10,3 +10,9 @@ EXPOSE 5000
 #   -e SERVER_IP=0.0.0.0 \
 #   -e SERVER_PORT=3000 \
 #   trial:latest
+# docker run --name app-client-1 \
+#     -p 0.0.0.0:5000:5000 \
+#     --network app_my-network \
+#     -e SERVER_IP=0.0.0.0 \
+#     -e SERVER_PORT=3000 \
+#     app-client:latest
