@@ -56,14 +56,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Wake containers up
-      run: docker compose up --detach
+      run: |
+        cd app
+        docker compose up --detach
     - name: List existing containers
       run: echo $(docker ps --format '{{.Names}}')
     - name: Setup test_case number for client docker
       run: export TEST_CASE=1
     - name: Give input '1' to client docker
       run: |
-        docker build -t app-client:latest .
+        docker build -t app-client:latest ./client
         docker run --name app-client-1 \
           -dp 0.0.0.0:5000:5000 \
           --network app_my-network \
