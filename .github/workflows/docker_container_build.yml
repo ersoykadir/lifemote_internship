@@ -73,7 +73,7 @@ jobs:
     - name: Check if client was successful
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
-        export result=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        export result_case1=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
         if [[ ${{ result }} == 0 ]]; then exit 0; else exit 1; fi
 
   case2:
