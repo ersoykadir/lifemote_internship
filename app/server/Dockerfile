@@ -2,15 +2,8 @@ FROM python:3.10
 WORKDIR /app
 COPY . .
 RUN pip install -r requirements.txt
-ENTRYPOINT python main.py
+ENTRYPOINT ["sh", "-c", "alembic upgrade head && python main.py"]
 EXPOSE 3000
-
-# docker run -dp 0.0.0.0:3306:3306 \
-#   --network todo-app \
-#   -v item-mysql-data:/var/lib/mysql \
-#   -e MYSQL_ROOT_PASSWORD=secret \
-#   -e MYSQL_DATABASE=items \
-#   mysql:8.0 
 
 # docker run -dp 0.0.0.0:3306:3306 \
 #     --network newn --network-alias mysql\
