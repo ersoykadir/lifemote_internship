@@ -11,26 +11,10 @@ name: Build Docker Container
 #         required: true
 #         type: string     
 
-# job: Three containers
-# build three containers check if all running
-# from docker ps?
-# convert client to run cases on user input
-
-# job: Case1
-# depends on threeCon
-# run test case 1
-
-# job: Case2
-# depends on case 1
-
-# job: versioning
-# depends on case 2
-# if all goes well, build images and push to dockerhub
+on: [push]
 
 # job: sent message to slack
 # parallel to versioning
-
-on: [push]
 
 jobs:
   triCon:
@@ -59,24 +43,33 @@ jobs:
       run: |
         cd app
         docker compose up --detach
-    - name: List existing containers
-      run: echo $(docker ps --format '{{.Names}}')
     - name: Setup test_case number for client docker
       run: export TEST_CASE=1
-    - name: Give input '1' to client docker
+    - name: Build client image
       run: |
         docker build -t app-client:latest ./app/client
-        docker run --name app-client-1 \
-          -dp 0.0.0.0:5000:5000 \
-          --network app_my-network \
-          -e SERVER_IP=0.0.0.0 \
-          -e SERVER_PORT=3000 \
-          app-client:latest
+    - name: List existing containers
+      run: |
+        echo $(docker ps --format '{{.Names}}')
+        export count=$(docker ps --format '{{.Names}}' | wc -l)
+        echo $(docker logs app-server-1)
+        if [[ $count == 2 ]]; then exit 0; else exit 1; fi
+    - name: Run client
+      run: |
+        docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
+    - name: docker output debug
+      run: |
+        echo $(docker logs app-client-1)
+        docker ps -a
     - name: Check if client was successful
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
-        export result_case1=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
-        if [[ $result_case1 == 0 ]]; then exit 0; else exit 1; fi
+        export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        echo $(docker ps --format '{{.Names}}')
+        echo "count=$(docker ps --format '{{.Names}}' | wc -l)"
+        echo $container_id
+        echo $result_case
+        if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
 
   case2:
     name: Trying case2 from client
@@ -84,10 +77,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Give input '2' to client docker
+    - name: Wake containers up
       run: |
-        docker attach app-client-1
-        echo '2'# not sure if this works
+        cd app
+        docker compose up --detach
+    - name: List existing containers
+      run: echo $(docker ps --format '{{.Names}}')
+    - name: Setup test_case number for client docker
+      run: export TEST_CASE=2
+    - name: Build client image
+      run: |
+        docker build -t app-client:latest ./app/client
+    - name: Run client
+      run: |
+        docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
+    - name: docker output debug
+      run: echo $(docker logs app-client-1)
+    - name: Check if client was successful
+      run: |
+        export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
+        export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
   
   versioning:
     name: Builds images and pushes them to dockerhub
@@ -95,7 +105,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Print GitHub event action
+      run: |
+        echo "${{ github.event_name }}"
+        echo "${{ github.event.inputs.version_name }}"
     - name: Build image for client
       run: |
-        cd app/client
-        docker build -t client:${{github.ref_name}} # needs to check if workflow run from tag or manual 
+        if [[ $github.event_name == 'workflow_dispatch' ]]; 
+        then export version_name=${{github.event.inputs.version_name}};
+        else export version_name='latest'; fi #${{github.ref_name}}
+        docker build -t app-client:$version_name ./app/client
+        docker build -t app-server:$version_name ./app/server
