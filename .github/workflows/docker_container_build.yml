@@ -57,6 +57,10 @@ jobs:
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
         export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        echo $(docker ps --format '{{.Names}}')
+        echo "count=$(docker ps --format '{{.Names}}' | wc -l)"
+        echo $container_id
+        echo $result_case
         if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
 
   case2:
