@@ -1,32 +1,15 @@
 name: Build Docker Container 
 
-# on:
-#   push:
-#     tags:
-#       - '*'
 on:
+  push:
+    tags:
+      - '*'
   workflow_dispatch:
     inputs:
       version_name:
         description: 'Used for naming docker container'
         required: true
         type: string     
-
-# job: Three containers
-# build three containers check if all running
-# from docker ps?
-# convert client to run cases on user input
-
-# job: Case1
-# depends on threeCon
-# run test case 1
-
-# job: Case2
-# depends on case 1
-
-# job: versioning
-# depends on case 2
-# if all goes well, build images and push to dockerhub
 
 # job: sent message to slack
 # parallel to versioning
