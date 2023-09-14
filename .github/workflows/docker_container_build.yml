@@ -1,15 +1,17 @@
 name: Build Docker Container 
 
-on:
-  push:
-    tags:
-      - '*'
-  workflow_dispatch:
-    inputs:
-      version_name:
-        description: 'Used for naming docker container'
-        required: true
-        type: string     
+# on:
+#   push:
+#     tags:
+#       - '*'
+#   workflow_dispatch:
+#     inputs:
+#       version_name:
+#         description: 'Used for naming docker container'
+#         required: true
+#         type: string     
+
+on: [push]
 
 # job: sent message to slack
 # parallel to versioning
@@ -48,12 +50,7 @@ jobs:
     - name: Run client
       run: |
         docker build -t app-client:latest ./app/client
-        docker run --name app-client-1 \
-          -dp 0.0.0.0:5000:5000 \
-          --network app_my-network \
-          -e SERVER_IP=0.0.0.0 \
-          -e SERVER_PORT=3000 \
-          app-client:latest
+        docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
     - name: Check if client was successful
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
@@ -77,12 +74,7 @@ jobs:
     - name: Run client
       run: |
         docker build -t app-client:latest ./app/client
-        docker run --name app-client-1 \
-          -dp 0.0.0.0:5000:5000 \
-          --network app_my-network \
-          -e SERVER_IP=0.0.0.0 \
-          -e SERVER_PORT=3000 \
-          app-client:latest
+        docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
     - name: Check if client was successful
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
