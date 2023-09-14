@@ -47,9 +47,11 @@ jobs:
       run: echo $(docker ps --format '{{.Names}}')
     - name: Setup test_case number for client docker
       run: export TEST_CASE=1
-    - name: Run client
+    - name: Build client image
       run: |
         docker build -t app-client:latest ./app/client
+    - name: Run client
+      run: |
         docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
     - name: Check if client was successful
       run: |
@@ -71,9 +73,11 @@ jobs:
       run: echo $(docker ps --format '{{.Names}}')
     - name: Setup test_case number for client docker
       run: export TEST_CASE=2
-    - name: Run client
+    - name: Build client image
       run: |
         docker build -t app-client:latest ./app/client
+    - name: Run client
+      run: |
         docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
     - name: Check if client was successful
       run: |
