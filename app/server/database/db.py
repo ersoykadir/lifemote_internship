@@ -25,6 +25,7 @@ print(host, user, password, db_name)
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:3306/{db_name}"
 
+print()
 print(SQLALCHEMY_DATABASE_URL)
 
 engine = create_engine(
