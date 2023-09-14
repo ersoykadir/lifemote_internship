@@ -114,10 +114,12 @@ jobs:
     - uses: actions/checkout@v3
     - name: Print GitHub event action
       run: |
-        echo "${{ github.event.action }}"
         echo "${{ github.event_name }}"
         echo "${{ github.event.inputs.version_name }}"
     - name: Build image for client
       run: |
-        docker build -t app-client:${{github.event.inputs.version_name}} ./app/client
-        docker build -t app-server:${{github.event.inputs.version_name}} ./app/server
+        if [[ $github.event_name == 'workflow_dispatch' ]]; 
+        then export version_name=${{github.event.inputs.version_name}};
+        else export version_name=${{github.event.inputs}}; fi
+        docker build -t app-client:$(version_name) ./app/client
+        docker build -t app-server:$(version_name) ./app/server
