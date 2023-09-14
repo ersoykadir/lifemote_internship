@@ -27,13 +27,20 @@ SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:3306/{db_na
 
 print()
 print(SQLALCHEMY_DATABASE_URL)
+while True:
+    try:
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL
+        )
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        Base = declarative_base()
+        break
+    except OperationalError as error:
+        print(error)
+        print("Connection to database failed")
+        print("Retrying...")
+        continue
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
 
 def validate_connection(database):
     """ Validate database connection """

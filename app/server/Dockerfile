@@ -5,8 +5,9 @@ ADD requirements.txt .
 RUN pip install -r requirements.txt
 # Layer for source code
 COPY . .
-ENTRYPOINT ["sh", "-c", "alembic upgrade head && python main.py"]
 EXPOSE 3000
+
+ENTRYPOINT ["./entrypoint.sh"]
 
 # docker build -t app-server:latest ./app/server
 
