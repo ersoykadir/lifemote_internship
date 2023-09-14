@@ -4,12 +4,13 @@ name: Build Docker Container
 #   push:
 #     tags:
 #       - '*'
-#   workflow_dispatch:
-#     inputs:
-#       version_name:
-#         description: 'Used for naming docker container'
-#         required: true
-#         type: string     
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Used for naming docker container'
+        required: true
+        type: string     
 
 # job: Three containers
 # build three containers check if all running
@@ -29,8 +30,6 @@ name: Build Docker Container
 
 # job: sent message to slack
 # parallel to versioning
-
-on: [push]
 
 jobs:
   triCon:
@@ -117,7 +116,8 @@ jobs:
       run: |
         echo "${{ github.event.action }}"
         echo "${{ github.event_name }}"
+        echo "${{ github.event.inputs.version_name }}"
     - name: Build image for client
       run: |
-        docker build -t app-client:${{github.ref_name}} ./app/client
-        docker build -t app-server:${{github.ref_name}} ./app/server
+        docker build -t app-client:${{github.event.inputs.version_name}} ./app/client
+        docker build -t app-server:${{github.event.inputs.version_name}} ./app/server
