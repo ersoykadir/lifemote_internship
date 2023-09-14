@@ -52,9 +52,11 @@ jobs:
         docker build -t app-client:latest ./app/client
     - name: Run client
       run: |
-        docker run --name app-client-1 -p 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
+        docker run --name app-client-1 -dp 0.0.0.0:5000:5000 --network app_my-network -e SERVER_IP=0.0.0.0 -e SERVER_PORT=3000 app-client:latest
     - name: docker output debug
-      run: echo $(docker logs app-client-1)
+      run: |
+        echo $(docker logs app-client-1)
+        docker ps -a
     - name: Check if client was successful
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
