@@ -61,6 +61,12 @@ jobs:
       run: |
         echo $(docker logs app-client-1)
         docker ps -a
+    - name: List existing containers
+      run: |
+        echo $(docker ps --format '{{.Names}}')
+        export count=$(docker ps --format '{{.Names}}' | wc -l)
+        echo $(docker logs app-server-1)
+        if [[ $count == 2 ]]; then exit 0; else exit 1; fi
     - name: Check if client was successful
       run: |
         export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
