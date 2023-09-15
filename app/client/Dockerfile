@@ -8,7 +8,7 @@ RUN apk add --no-cache bash
 # Layer for source code
 COPY . .
 EXPOSE 5000
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 
 # docker build -t app-client:latest ./app/client
 
