@@ -17,4 +17,5 @@ ENTRYPOINT ["sh", "entrypoint.sh"]
 #     --network app_my-network \
 #     -e SERVER_HOST=server \
 #     -e SERVER_PORT=3000 \
+#     -e TEST_CASE=1 \
 #     app-client:latest

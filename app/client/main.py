@@ -180,9 +180,11 @@ if __name__ == "__main__":
     print("Trying to connect to server")
     while not check_connection():
         time.sleep(5)
+    # Trycount and fail after 5 tries
     
     # Test case from environment variable
     TEST_CASE = os.environ.get("TEST_CASE")
+    print(f"Running test case {TEST_CASE}")
     if TEST_CASE == "1":
         case1()
     elif TEST_CASE == "2":
