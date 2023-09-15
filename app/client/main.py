@@ -178,14 +178,14 @@ def case2():
 
 if __name__ == "__main__":
     print("Trying to connect to server")
-    try_count = 0
-    while not check_connection() and try_count < 5:
-        time.sleep(1)
-        try_count += 1
-    # Trycount and fail after 5 tries
-    if try_count == 5:
-        print("Failed to connect to server")
-        sys.exit(1)
+    # try_count = 0
+    # while not check_connection() and try_count < 5:
+    #     time.sleep(1)
+    #     try_count += 1
+    # # Trycount and fail after 5 tries
+    # if try_count == 5:
+    #     print("Failed to connect to server")
+    #     sys.exit(1)
     
     # Test case from environment variable
     TEST_CASE = os.environ.get("TEST_CASE")
