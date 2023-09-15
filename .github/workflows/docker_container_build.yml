@@ -68,6 +68,8 @@ jobs:
         echo "count=$(docker ps --format '{{.Names}}' | wc -l)"
         echo $container_id
         echo $result_case
+        echo $(docker logs app-client-1)
+        docker ps -a
         if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
 
   case2:
