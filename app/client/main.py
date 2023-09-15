@@ -11,7 +11,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
-API_URL = "http://server:3000" # Change to server:3000 when running in docker!
+SERVER_HOST = os.environ.get("SERVER_HOST")
+SERVER_PORT = os.environ.get("SERVER_PORT")
+API_URL = f"http://{SERVER_HOST}:{SERVER_PORT}" # Change to server:3000 when running in docker!
 HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
 def request(req_type, url, headers, payload, params):

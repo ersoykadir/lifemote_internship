@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Abort on any error (including if wait-for-it fails).
 set -e
