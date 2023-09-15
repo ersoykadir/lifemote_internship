@@ -54,7 +54,8 @@ jobs:
         if [[ $count == 2 ]]; then exit 0; else exit 1; fi
     - name: Run client
       run: |
-        docker run --name app-client-1 -dp 127.0.0.1:5000:5000 --network app_my-network -e SERVER_HOST=localhost -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
+        docker network ls
+        docker run --name app-client-1 -dp 127.0.0.1:5000:5000 --network app_my-network -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest    
     - name: docker output debug
       run: |
         sleep 5s
