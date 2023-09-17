@@ -13,8 +13,8 @@ ENTRYPOINT ["./entrypoint.sh"]
 # docker build -t app-client:latest ./app/client
 
 # docker run --name app-client-1 \
-#     -dp 127.0.0.1:5000:5000 \
-#     --network app_my-network \
+#     -dp 5000:5000 \
+#     --network=app_container_network \
 #     -e SERVER_HOST=server \
 #     -e SERVER_PORT=3000 \
 #     -e TEST_CASE=1 \

@@ -13,6 +13,9 @@ load_dotenv()
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 SERVER_HOST = os.environ.get("SERVER_HOST")
 SERVER_PORT = os.environ.get("SERVER_PORT")
+if not SERVER_HOST or not SERVER_PORT:
+    print("Environment variables not set")
+    sys.exit(1)
 API_URL = f"http://{SERVER_HOST}:{SERVER_PORT}" # Change to server:3000 when running in docker!
 HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
