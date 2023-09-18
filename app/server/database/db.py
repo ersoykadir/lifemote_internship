@@ -35,8 +35,8 @@ while True:
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         Base = declarative_base()
         break
-    except OperationalError as error:
-        print(error)
+    except OperationalError as err:
+        print(err)
         print("Connection to database failed")
         print("Retrying...")
         continue

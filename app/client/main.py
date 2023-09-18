@@ -5,7 +5,6 @@ Client for testing the API
 """
 import os
 import sys
-import time
 import requests
 from dotenv import load_dotenv
 load_dotenv()
@@ -136,7 +135,7 @@ def check_connection():
             return True
         print("Connection failed")
         return False
-    except Exception as err:
+    except ValueError as err:
         print("Connection failed", err)
         return False
 
@@ -189,7 +188,7 @@ if __name__ == "__main__":
     # if try_count == 5:
     #     print("Failed to connect to server")
     #     sys.exit(1)
-    
+
     # Test case from environment variable
     TEST_CASE = os.environ.get("TEST_CASE")
     print(f"Running test case {TEST_CASE}")
