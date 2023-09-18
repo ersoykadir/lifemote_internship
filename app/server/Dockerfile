@@ -30,5 +30,5 @@ ENTRYPOINT ["./entrypoint.sh"]
 #   -e MYSQL_DB=items \
 #   -e GOOGLE_CLIENT_ID=secret \
 #   -e GOOGLE_CLIENT_SECRET=secret \
-#   -e SECRET_KEY=d29dc10453b57bdf4d05e183d81b3074a5f56f2ef4c636aa52fb0472ec6fceb3 \
+#   -e SECRET_KEY=secret \
 #   app-server:latest
