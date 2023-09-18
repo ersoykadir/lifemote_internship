@@ -22,13 +22,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Export secrets to environment
+      run: |
+        export $MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
+        export $GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}
+        export $GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
+        export $SECRET_KEY=${{secrets.SECRET_KEY}}
     - name: Run docker compose
       run: |
         cd app
         docker compose up --detach
     - name: List running docker containers
       id: list_dockers
-      run: echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
+      run: |
+        sleep 5s
+        echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
     - name: Check results
       run: |
         if [[ ${{ steps.list_dockers.outputs.count }} == 2 ]]; then exit 0; else exit 1; fi
@@ -39,6 +47,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Export secrets to environment
+      run: |
+        export $MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
+        export $GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}
+        export $GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
+        export $SECRET_KEY=${{secrets.SECRET_KEY}}
     - name: Wake containers up
       run: |
         cd app
@@ -54,9 +68,9 @@ jobs:
         if [[ $count == 2 ]]; then exit 0; else exit 1; fi
     - name: Run client
       run: |
-        sleep 15s
+        sleep 5s
         docker network ls
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=$ACCESS_TOKEN -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=${{secrets.ACCESS_TOKEN}} -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
     - name: docker output debug
       run: |
         sleep 5s
@@ -80,6 +94,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Export secrets to environment
+      run: |
+        export $MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
+        export $GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}
+        export $GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
+        export $SECRET_KEY=${{secrets.SECRET_KEY}}
     - name: Wake containers up
       run: |
         cd app
