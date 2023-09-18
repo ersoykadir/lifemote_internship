@@ -138,6 +138,7 @@ jobs:
         if [[ $github.event_name == 'workflow_dispatch' ]]; 
         then export version_name=${{github.event.inputs.version_name}};
         else export version_name='latest'; fi #${{github.ref_name}}
+        echo $version_name
     - name: Build images for client and server
       run: |
         docker build -t $DOCKER_USER/internship-client:$version_name ./app/client
