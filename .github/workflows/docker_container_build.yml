@@ -20,6 +20,11 @@ jobs:
   triCon:
     name: Checking three containers running
     runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
     steps:
     - uses: actions/checkout@v3
     - name: Run docker compose
@@ -28,7 +33,9 @@ jobs:
         docker compose up --detach
     - name: List running docker containers
       id: list_dockers
-      run: echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
+      run: |
+        sleep 5s
+        echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
     - name: Check results
       run: |
         if [[ ${{ steps.list_dockers.outputs.count }} == 2 ]]; then exit 0; else exit 1; fi
@@ -37,6 +44,11 @@ jobs:
     name: Trying case1 from client
     needs: triCon
     runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
     steps:
     - uses: actions/checkout@v3
     - name: Wake containers up
@@ -54,9 +66,9 @@ jobs:
         if [[ $count == 2 ]]; then exit 0; else exit 1; fi
     - name: Run client
       run: |
-        sleep 15s
+        sleep 5s
         docker network ls
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=${{secrets.ACCESS_TOKEN}} -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
     - name: docker output debug
       run: |
         sleep 5s
@@ -78,6 +90,11 @@ jobs:
     name: Trying case2 from client
     needs: case1
     runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
     steps:
     - uses: actions/checkout@v3
     - name: Wake containers up
@@ -91,7 +108,7 @@ jobs:
         docker build -t app-client:latest ./app/client
     - name: Run client
       run: |
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 app-client:latest
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=$ACCESS_TOKEN -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 app-client:latest
     - name: docker output debug
       run: echo $(docker logs app-client-1)
     - name: Check if client was successful
