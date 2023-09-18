@@ -20,14 +20,13 @@ jobs:
   triCon:
     name: Checking three containers running
     runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
     steps:
     - uses: actions/checkout@v3
-    - name: Export secrets to environment
-      run: |
-        export $MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
-        export $GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}
-        export $GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
-        export $SECRET_KEY=${{secrets.SECRET_KEY}}
     - name: Run docker compose
       run: |
         cd app
@@ -45,14 +44,13 @@ jobs:
     name: Trying case1 from client
     needs: triCon
     runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
     steps:
     - uses: actions/checkout@v3
-    - name: Export secrets to environment
-      run: |
-        export $MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
-        export $GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}
-        export $GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
-        export $SECRET_KEY=${{secrets.SECRET_KEY}}
     - name: Wake containers up
       run: |
         cd app
@@ -92,14 +90,13 @@ jobs:
     name: Trying case2 from client
     needs: case1
     runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
     steps:
     - uses: actions/checkout@v3
-    - name: Export secrets to environment
-      run: |
-        export $MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}}
-        export $GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}
-        export $GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}
-        export $SECRET_KEY=${{secrets.SECRET_KEY}}
     - name: Wake containers up
       run: |
         cd app
