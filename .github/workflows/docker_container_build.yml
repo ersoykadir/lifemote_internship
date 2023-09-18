@@ -56,7 +56,7 @@ jobs:
       run: |
         sleep 15s
         docker network ls
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=$ACCESS_TOKEN -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
     - name: docker output debug
       run: |
         sleep 5s
@@ -91,7 +91,7 @@ jobs:
         docker build -t app-client:latest ./app/client
     - name: Run client
       run: |
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 app-client:latest
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=$ACCESS_TOKEN -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 app-client:latest
     - name: docker output debug
       run: echo $(docker logs app-client-1)
     - name: Check if client was successful
