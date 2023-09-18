@@ -121,16 +121,28 @@ jobs:
     name: Builds images and pushes them to dockerhub
     needs: case2
     runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{secrets.DOCKER_USER}}
+      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
     steps:
     - uses: actions/checkout@v3
     - name: Print GitHub event action
       run: |
         echo "${{ github.event_name }}"
         echo "${{ github.event.inputs.version_name }}"
-    - name: Build image for client
+    - name: Docker login
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: Acquire version name from git tag or input
       run: |
         if [[ $github.event_name == 'workflow_dispatch' ]]; 
         then export version_name=${{github.event.inputs.version_name}};
         else export version_name='latest'; fi #${{github.ref_name}}
-        docker build -t app-client:$version_name ./app/client
-        docker build -t app-server:$version_name ./app/server
+    - name: Build images for client and server
+      run: |
+        docker build -t $DOCKER_USER/internship-client:$version_name ./app/client
+        docker build -t $DOCKER_USER/internship-server:$version_name ./app/server
+    - name: Tag & push to dockerhub
+      run: |
+        docker push $DOCKER_USER/internship-client:$version_name
+        docker push $DOCKER_USER/internship-server:$version_name
