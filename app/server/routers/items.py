@@ -47,24 +47,26 @@ def read_item(
 
 @router.post("/", response_model=schemas.Item, status_code=status.HTTP_201_CREATED)
 def create_item_for_user(
-    item: schemas.ItemBase,
+    item: schemas.ItemCreate,
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
     """Create an item for a user"""
 
-    db_context = crud.context.get_context(database, context_id=item.context_id)
+    db_context = crud.context.get_context_by_name_for_user(
+        database, context_name=item.context_name, user_id=user.id
+    )
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
     return crud.item.create_user_item(
-        database, item_data=item, user_id=user.id
+        database, item_data=item, user_id=user.id, context_id=db_context.id
     )
 
 
 @router.put("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
 def update_item(
     item_id: int,
-    item: schemas.ItemBase,
+    item: schemas.ItemCreate,
     database: Session = Depends(get_db),
     user: schemas.User = Depends(get_current_user),
 ):
@@ -76,7 +78,9 @@ def update_item(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You do not have permission to access this context",
         )
-    db_context = crud.context.get_context(database, context_id=item.context_id)
+    db_context = crud.context.get_context_by_name_for_user(
+        database, context_name=item.context_name, user_id=user.id
+    )
     if db_context is None:
         raise HTTPException(status_code=404, detail="Context not found")
     return crud.item.update_item(database, item_id=item_id, item_data=item)
