@@ -10,16 +10,12 @@ class ItemBase(BaseModel):
     """Item base schema"""
     message: str
     completed: bool = False
-
-class ItemCreate(ItemBase):
-    """Item create schema"""
-    context_name: Union[str, None] = None
+    context_id: int
 
 class Item(ItemBase):
     """Item schema"""
     id: int
     owner_id: int
-    context_id: int
 
     class Config:
         """Config"""

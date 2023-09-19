@@ -35,29 +35,27 @@ class Item:
     def create_user_item(
         self,
         database: Session,
-        item_data: item_schema.ItemCreate,
-        user_id: int, context_id: int
+        item_data: item_schema.ItemBase,
+        user_id: int
     ):
         """Create item"""
         db_item = item_model.Item(
             message=item_data.message,
             completed=item_data.completed,
             owner_id=user_id,
-            context_id=context_id
+            context_id=item_data.context_id
         )
         database.add(db_item)
         database.commit()
         database.refresh(db_item)
         return db_item
 
-    def update_item(self, database: Session, item_id: int, item_data: item_schema.ItemCreate):
+    def update_item(self, database: Session, item_id: int, item_data: item_schema.ItemBase):
         """Update item"""
         db_item = self.get_item(database, item_id=item_id)
         db_item.message = item_data.message
         db_item.completed = item_data.completed
-        db_item.context_id = context.get_context_by_name_for_user(
-            database, context_name=item_data.context_name, user_id=db_item.owner_id
-        ).id
+        db_item.context_id = item_data.context_id
         database.commit()
         database.refresh(db_item)
         return db_item
