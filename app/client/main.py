@@ -100,19 +100,19 @@ def get_context_items(context_name):
         print(f"Item: '{item['message']} {item['id']}'")
     return [item["id"] for item in context["items"]]
 
-def create_item(message, completed, context_id):
+def create_item(message, completed, context_name):
     '''Create an item'''
     url = f"{API_URL}/items/"
-    payload = {"message":message, "completed":completed, "context_id":context_id}
+    payload = {"message":message, "completed":completed, "context_name":context_name}
     item = request("POST", url, HEADERS, payload, None)
     print(f"Item with message: '{item['message']}' created")
     print(item)
     return item
 
-def update_item(item_id, message, completed, context_id):
+def update_item(item_id, message, completed, context_name):
     '''Update an item'''
     url = f"{API_URL}/items/{item_id}"
-    payload = {"message":message, "completed":completed, "context_id":context_id}
+    payload = {"message":message, "completed":completed, "context_name":context_name}
     item = request("PUT", url, HEADERS, payload, None)
     print(f"Item with message: '{item['message']}' updated")
     print(item)
@@ -153,8 +153,8 @@ def case1():
     context = create_context(context_name, context_description)
     assert context["name"] == context_name
 
-    item1 = create_item(item_messages[0], False, context["id"])
-    item2 = create_item(item_messages[1], False, context["id"])
+    item1 = create_item(item_messages[0], False, context_name)
+    item2 = create_item(item_messages[1], False, context_name)
     items = get_context_items(context_name)
     assert item1["id"] in items and item2["id"] in items
 

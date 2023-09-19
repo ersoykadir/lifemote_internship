@@ -50,21 +50,21 @@ def read_context(
     return db_context
 
 
-@router.get("/", response_model=schemas.Context)
-def get_context_by_name(
-    context_name: str,
-    database: Session = Depends(get_db),
-    user: schemas.User = Depends(get_current_user),
-):
-    """Get a specific context by name"""
-    db_context = crud.context.get_context_by_name_for_user(
-        database, context_name=context_name, user_id=user.id
-    )
-    if db_context is None:
-        raise HTTPException(status_code=404, detail="Context not found")
-    # No need to check owner_id because get_context_by_name
-    # gets contexts only for the current user
-    return db_context
+# @router.get("/", response_model=schemas.Context)
+# def get_context_by_name(
+#     context_name: str,
+#     database: Session = Depends(get_db),
+#     user: schemas.User = Depends(get_current_user),
+# ):
+#     """Get a specific context by name"""
+#     db_context = crud.context.get_context_by_name_for_user(
+#         database, context_name=context_name, user_id=user.id
+#     )
+#     if db_context is None:
+#         raise HTTPException(status_code=404, detail="Context not found")
+#     # No need to check owner_id because get_context_by_name
+#     # gets contexts only for the current user
+#     return db_context
 
 
 @router.post("/", response_model=schemas.Context)
