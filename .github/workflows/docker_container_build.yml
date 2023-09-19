@@ -1,0 +1,147 @@
+name: Build Docker Container 
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Used for naming docker container'
+        required: true
+        type: string
+
+# job: sent message to slack
+# parallel to versioning
+
+jobs:
+  triCon:
+    name: Checking three containers running
+    runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run docker compose
+      run: |
+        cd app
+        docker compose up --detach
+    - name: List running docker containers
+      id: list_dockers
+      run: |
+        sleep 5s
+        echo "count=$(docker ps --format '{{.Names}}' | wc -l)" >> $GITHUB_OUTPUT
+    - name: Check results
+      run: |
+        if [[ ${{ steps.list_dockers.outputs.count }} == 2 ]]; then exit 0; else exit 1; fi
+        
+  case1:
+    name: Trying case1 from client
+    needs: triCon
+    runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Wake containers up
+      run: |
+        cd app
+        docker compose up --detach
+    - name: Build client image
+      run: |
+        docker build -t app-client:latest ./app/client
+    - name: List existing containers
+      run: |
+        echo $(docker ps --format '{{.Names}}')
+        export count=$(docker ps --format '{{.Names}}' | wc -l)
+        echo $(docker logs app-server-1)
+        if [[ $count == 2 ]]; then exit 0; else exit 1; fi
+    - name: Run client
+      run: |
+        sleep 5s
+        docker network ls
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=${{secrets.ACCESS_TOKEN}} -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
+    - name: docker output debug
+      run: |
+        sleep 5s
+        echo $(docker logs app-client-1)
+        docker ps -a
+    - name: Check if client was successful
+      run: |
+        export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
+        export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        echo $(docker ps --format '{{.Names}}')
+        echo "count=$(docker ps --format '{{.Names}}' | wc -l)"
+        echo $container_id
+        echo $result_case
+        echo $(docker logs app-client-1)
+        docker ps -a
+        if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
+
+  case2:
+    name: Trying case2 from client
+    needs: case1
+    runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Wake containers up
+      run: |
+        cd app
+        docker compose up --detach
+    - name: List existing containers
+      run: echo $(docker ps --format '{{.Names}}')
+    - name: Build client image
+      run: |
+        docker build -t app-client:latest ./app/client
+    - name: Run client
+      run: |
+        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=$ACCESS_TOKEN -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 app-client:latest
+    - name: docker output debug
+      run: echo $(docker logs app-client-1)
+    - name: Check if client was successful
+      run: |
+        export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
+        export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
+  
+  versioning:
+    name: Builds images and pushes them to dockerhub
+    needs: case2
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{secrets.DOCKER_USER}}
+      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Print GitHub event action
+      run: |
+        echo "${{ github.event_name }}"
+        echo "${{ github.event.inputs.version_name }}"
+    - name: Docker login
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: Acquire version name from git tag or input
+      run: |
+        if [[ $github.event_name == 'workflow_dispatch' ]]; 
+        then export version_name=${{github.event.inputs.version_name}};
+        else export version_name='latest'; fi #${{github.ref_name}}
+        echo "version_name=$version_name" >> "$GITHUB_ENV"
+    - name: Build images for client and server
+      run: |
+        docker build -t $DOCKER_USER/internship-client:$version_name ./app/client
+        docker build -t $DOCKER_USER/internship-server:$version_name ./app/server
+    - name: Tag & push to dockerhub
+      run: |
+        docker push $DOCKER_USER/internship-client:$version_name
+        docker push $DOCKER_USER/internship-server:$version_name

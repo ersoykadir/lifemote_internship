@@ -1,39 +1,32 @@
-# Following this tutorial: https://fastapi.tiangolo.com/tutorial/sql-databases/
+"""
+Kadir Ersoy
+Internship Project
+Server Main
+Following the tutorial: https://fastapi.tiangolo.com/tutorial/
+"""
+import os
+import uvicorn
 
-from typing import List
-
-from fastapi import Depends, FastAPI, HTTPException, status
-from sqlalchemy.orm import Session
-
-from database import crud, models, schemas
-from database.db import SessionLocal, engine
-
-models.Base.metadata.create_all(bind=engine)
+from fastapi import FastAPI
+from routers import users, items, contexts, auth
 
 app = FastAPI()
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+app.include_router(users.router)
+app.include_router(items.router)
+app.include_router(contexts.router)
+app.include_router(auth.router)
 
 
-@app.post("/items/", response_model=schemas.Item, status_code=status.HTTP_201_CREATED)
-def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    return crud.create_item(db=db, item=item)
-
-
-@app.get("/items/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
-def read_item(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud.get_item(db, item_id=item_id)
-    if db_item is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return db_item
-
-import uvicorn, os
+@app.get("/")
+async def root():
+    """Root"""
+    return {"message": "Hello World"}
 
 if __name__ == "__main__":
-   uvicorn.run("main:app", host=os.environ.get('HOST'), port=int(os.environ.get('PORT')), reload=True)
+    uvicorn.run(
+        "main:app",
+        host=os.environ.get("HOST"),
+        port=int(os.environ.get("PORT")),
+        reload=True,
+    )
