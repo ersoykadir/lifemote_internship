@@ -8,7 +8,7 @@ import os
 import uvicorn
 
 from fastapi import FastAPI
-from routers import users, items, contexts, auth
+from routers import users, items, contexts, auth, extras
 
 app = FastAPI()
 
@@ -16,6 +16,7 @@ app.include_router(users.router)
 app.include_router(items.router)
 app.include_router(contexts.router)
 app.include_router(auth.router)
+app.include_router(extras.router)
 
 
 @app.get("/")
