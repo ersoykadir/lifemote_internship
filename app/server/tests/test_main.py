@@ -1,5 +1,10 @@
+"""
+Kadir Ersoy
+Internship Project
+Test Main Router
+"""
 from fastapi.testclient import TestClient
-from server.main import app
+from main import app
 
 client = TestClient(app)
 
