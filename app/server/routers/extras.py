@@ -87,12 +87,6 @@ def sort_itemsv1(
         response.status_code = status.HTTP_400_BAD_REQUEST
         return HTTPException(status_code=400, detail="Must be a list of item objects!")
 
-# """Sort a dictionary by its keys"""
-# keys = list(dictionary.keys())
-# keys.sort()
-# return [dictionary[key] for key in keys]
-
-
 @router.post("/add_two_lists")
 def add_two_lists(list1: list, list2: list):
     """Add two lists"""
