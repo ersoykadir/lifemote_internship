@@ -23,7 +23,7 @@ router = APIRouter(
 # Sort context items by their message
 # Sort list of context dictionaries by their number of items
 # Combine two context items into a single context
-    # contextname1, contextname2, newcontextname 
+    # contextname1, contextname2, newcontextname
 # Maybe we can have a route to filter the items by their completion status
 
 class SortBase(BaseModel):
@@ -52,7 +52,11 @@ def get_context_items(
     database: Session = Depends(get_db)
 ):
     """Dependency"""
-    items = crud.item.get_items_by_context_for_user(database, user_id=user.id, context_id=input_data.context_id)
+    items = crud.item.get_items_by_context_for_user(
+        database,
+        user_id=user.id,
+        context_id=input_data.context_id
+    )
     return items
 
 # Sort a list of dictionaries by a property
@@ -61,11 +65,10 @@ def sort_items(response: Response, input_data: SortBase):
     """Sort a list of dictionaries by a property"""
     if len(input_data.items) == 0:
         return []
-    if isinstance(input_data.items[0], dict):
-        return sorted(input_data.items, key=lambda x: x[input_data.property_name].lower())
-    else:
+    if not isinstance(input_data.items[0], dict):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return HTTPException(status_code=400, detail="Must be a list of dictionaries!")
+    return sorted(input_data.items, key=lambda x: x[input_data.property_name].lower())
 
 # Sort a list of dictionaries by a property
 @router.post("/sort_itemsv1")
@@ -78,14 +81,16 @@ def sort_itemsv1(
     # if items is a list of dictionaries
     if not isinstance(items, list):
         response.status_code = status.HTTP_400_BAD_REQUEST
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Input should be a valid list")
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Input should be a valid list"
+        )
     if len(items) == 0:
         return []
-    if isinstance(items[0], Item):
-        return sorted(items, key=lambda x: getattr(x, input_data.property_name).lower())
-    else:
+    if not isinstance(items[0], Item):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return HTTPException(status_code=400, detail="Must be a list of item objects!")
+    return sorted(items, key=lambda x: getattr(x, input_data.property_name).lower())
 
 @router.post("/add_two_lists")
 def add_two_lists(list1: list, list2: list):
