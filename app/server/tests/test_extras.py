@@ -5,6 +5,7 @@ Test Item Router
 """
 import sys
 import os
+import pytest
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 
@@ -14,97 +15,49 @@ sys.path.insert(0, backend_path)
 
 from main import app
 from routers import extras
-import extras_data
+from tests.utils import extras as extras_utils
+from tests.utils.utils import check_response_validity
 
 load_dotenv()
 client = TestClient(app)
 
-
-def override_get_context_items():
-    """Dependency"""
-    return extras_data._ITEMS1
-
-def override_get_context_items_empty():
-    """Dependency"""
-    return []
-
-def override_get_context_items_nonlist():
-    """Dependency"""
-    return "Hello World"
-
-def test_sort_items():
+@pytest.mark.parametrize("items, property_name, output, status_code", extras_utils.sort_items_test_data)
+def test_sort_items(items, property_name, output, status_code):
     """ Test sort items"""
     payload = {
-        "items": extras_data.ITEMS1,
-        "property_name": "message"
+        "items": items,
+        "property_name": property_name
     }
-    response = client.post("/extras/sort_items", json=payload, headers=extras_data.HEADERS)
-    assert response.status_code == 200
-    assert response.json() == extras_data.ITEMS1_SORTED
+    response = client.post("/extras/sort_items", json=payload, headers=extras_utils.HEADERS)
+    check_response_validity(response, output, status_code)
 
-def test_append_lists():
+@pytest.mark.parametrize("items1, items2, output, status_code", extras_utils.append_lists_test_data)
+def test_append_lists(items1, items2, output, status_code):
     """ Test append lists"""
     payload = {
-        "items1": extras_data.ITEMS1,
-        "items2": extras_data.ITEMS2
+        "items1": items1,
+        "items2": items2
     }
-    response = client.post("/extras/append_lists", json=payload, headers=extras_data.HEADERS)
-    assert response.status_code == 200
-    assert response.json() == extras_data.ITEMS1 + extras_data.ITEMS2
+    response = client.post("/extras/append_lists", json=payload, headers=extras_utils.HEADERS)
+    check_response_validity(response, output, status_code)
 
-def test_filter_list():
+@pytest.mark.parametrize("items, complete_status, output, status_code", extras_utils.filter_list_test_data)
+def test_filter_list(items, complete_status, output, status_code):
     """ Test filter list"""
     payload = {
-        "items": [
-            {
-                "message": "Hello World",
-                "completed": False,
-            },
-            {
-                "message": "Hello Mars",
-                "completed": True,
-            }
-        ],
-        "completed": False
+        "items": items,
+        "completed": complete_status
     }
-    response = client.post("/extras/filter_list", json=payload, headers=extras_data.HEADERS)
-    assert response.status_code == 200
-    assert response.json() == [
-        {
-            "message": "Hello World",
-            "completed": False,
-        }
-    ]
+    response = client.post("/extras/filter_list", json=payload, headers=extras_utils.HEADERS)
+    check_response_validity(response, output, status_code)
 
-def test_sort_itemsv1():
+@pytest.mark.parametrize("override_function, property_name, output, status_code", extras_utils.sort_itemsv1_test_data)
+def test_sort_itemsv1(override_function, property_name, output, status_code):
     """ Test sort items"""
     payload = {
-        "property_name": "message",
+        "property_name": property_name,
         "context_id" : 4
     }
-    app.dependency_overrides[extras.get_context_items] = override_get_context_items
-    response = client.post("/extras/sort_itemsv1", json=payload, headers=extras_data.HEADERS)
-    assert response.status_code == 200
-    assert response.json() == extras_data.ITEMS1_SORTED
-
-def test_sort_itemsv1_emptylist():
-    """ Test sort items"""
-    payload = {
-        "property_name": "message",
-        "context_id" : 4
-    }
-    app.dependency_overrides[extras.get_context_items] = override_get_context_items_empty
-    response = client.post("/extras/sort_itemsv1", json=payload, headers=extras_data.HEADERS)
-    assert response.status_code == 200
-    assert response.json() == []
-
-def test_sort_itemsv1_nonlist():
-    """ Test sort items"""
-    payload = {
-        "property_name": "message",
-        "context_id" : 4
-    }
-    app.dependency_overrides[extras.get_context_items] = override_get_context_items_nonlist
-    response = client.post("/extras/sort_itemsv1", json=payload, headers=extras_data.HEADERS)
-    assert response.status_code == 400
-    assert response.json().get("detail") == "Must be a list of dictionaries!"
+    app.dependency_overrides[extras.get_context_items] = override_function
+    response = client.post("/extras/sort_itemsv1", json=payload, headers=extras_utils.HEADERS)
+    check_response_validity(response, output, status_code)
