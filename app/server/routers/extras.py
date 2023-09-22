@@ -57,9 +57,15 @@ def get_context_items(
 
 # Sort a list of dictionaries by a property
 @router.post("/sort_items")
-def sort_items(input_data: SortBase):
+def sort_items(response: Response, input_data: SortBase):
     """Sort a list of dictionaries by a property"""
-    return sorted(input_data.items, key=lambda x: x[input_data.property_name].lower())
+    if len(input_data.items) == 0:
+        return []
+    if isinstance(input_data.items[0], dict):
+        return sorted(input_data.items, key=lambda x: x[input_data.property_name].lower())
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return HTTPException(status_code=400, detail="Must be a list of dictionaries!")
 
 # Sort a list of dictionaries by a property
 @router.post("/sort_itemsv1")
@@ -72,12 +78,13 @@ def sort_itemsv1(
     # if items is a list of dictionaries
     if not isinstance(items, list):
         response.status_code = status.HTTP_400_BAD_REQUEST
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must be a list of dictionaries!")
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Input should be a valid list")
     if len(items) == 0:
         return []
     if isinstance(items[0], Item):
         return sorted(items, key=lambda x: getattr(x, input_data.property_name).lower())
     else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return HTTPException(status_code=400, detail="Must be a list of item objects!")
 
 # """Sort a dictionary by its keys"""
@@ -99,4 +106,4 @@ def append_lists(input_data: AppendBase):
 @router.post("/filter_list")
 def filter_list(input_data: FilterCompletionBase):
     """Filter a list"""
-    return [item for item in input_data.items if item['completed'] == input_data.completed]
+    return [item for item in input_data.items if item['completed'] is input_data.completed]
