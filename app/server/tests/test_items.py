@@ -11,9 +11,6 @@ from main import app
 load_dotenv()
 client = TestClient(app)
 
-# For now, I will use the real database for testing
-# TODO: Try to mock the database
-
 TEST_ITEM = None
 TOKEN = os.environ.get("ACCESS_TOKEN")
 print(TOKEN)
@@ -35,8 +32,8 @@ def test_create_item():
     assert response.json()["completed"] == payload["completed"]
     assert response.json()["context_name"] == payload["context_name"]
 
-    global TEST_ITEM
-    TEST_ITEM = response.json()
+    # global TEST_ITEM
+    # TEST_ITEM = response.json()
 
 
 def test_get_item():
