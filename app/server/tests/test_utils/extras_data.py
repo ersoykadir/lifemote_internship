@@ -5,10 +5,13 @@ Data&Utils for extras route tests
 """
 import os
 from models.item import Item
+
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
+
 HEADERS = {
     "Authorization": f"Bearer {ACCESS_TOKEN}"
 }
+
 ITEMS1 = [
     {
         "message": "Hello World",
@@ -19,6 +22,7 @@ ITEMS1 = [
         "completed": False,
     }
 ]
+
 ITEMS2 = [
     {
         "message": "Hello Venus",
@@ -29,6 +33,7 @@ ITEMS2 = [
         "completed": False,
     }
 ]
+
 ITEMS3 = [
     {
         "message": "Hello Jupiter",
@@ -52,11 +57,14 @@ ITEMS3 = [
     }
 ]
 
-ITEMS1_SORTED = sorted(ITEMS1, key=lambda x: x['message'].lower())
-ITEMS2_SORTED = sorted(ITEMS2, key=lambda x: x['message'].lower())
+# Sort items by message
+ITEMS1_SORTED = sorted(ITEMS1, key=lambda x: x["message"].lower())
+
+ITEMS2_SORTED = sorted(ITEMS2, key=lambda x: x["message"].lower())
 
 # Create Item objects from dictionaries
 ITEM_OBJECTS1 = [ Item(**item) for item in ITEMS1 ]
+
 ITEM_OBJECTS2 = [ Item(**item) for item in ITEMS2 ]
 
 # Function override for get_context_items
@@ -89,6 +97,7 @@ sort_items_test_data = [
     ([3, 2, 1], "message", "Must be a list of dictionaries!", 400),
     ("Hello World", "message", "Input should be a valid list", 422)
 ]
+
 # Test data for append_lists
 append_lists_test_data = [
     ([1, 2, 3], [4, 5, 6], [1, 2, 3, 4, 5, 6], 200),
@@ -96,6 +105,7 @@ append_lists_test_data = [
     ([], [], [], 200),
     ("Hello World", "Hello Mars", "Input should be a valid list", 422)
 ]
+
 # Test data for sort_itemsv1
 sort_itemsv1_test_data = [
     (OverrideGetContextItems.context_items_1, "message", ITEMS1_SORTED, 200),
@@ -103,10 +113,11 @@ sort_itemsv1_test_data = [
     (OverrideGetContextItems.empty_context_items, "message", [], 200),
     (OverrideGetContextItems.nonlist_context_items, "message", "Input should be a valid list", 400)
 ]
+
 # Test data for filter_list
 filter_list_test_data = [
-    (ITEMS3, False, [item for item in ITEMS3 if item['completed'] is False], 200),
-    (ITEMS3, True, [item for item in ITEMS3 if item['completed'] is True], 200),
+    (ITEMS3, False, [item for item in ITEMS3 if item["completed"] is False], 200),
+    (ITEMS3, True, [item for item in ITEMS3 if item["completed"] is True], 200),
     ([], False, [], 200),
     ([], True, [], 200),
     ("Hello World", False, "Input should be a valid list", 422)

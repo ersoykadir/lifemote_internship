@@ -82,7 +82,7 @@ def sort_itemsv1(
     if not isinstance(items, list):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Input should be a valid list"
         )
     if len(items) == 0:

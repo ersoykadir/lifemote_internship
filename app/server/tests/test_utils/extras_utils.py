@@ -1,7 +1,7 @@
 """
 Kadir Ersoy
 Internship Project
-Utils for tests
+Utils for extras tests
 """
 def check_response_validity(response, expected_result, expected_status_code):
     """ Check the validity of the response"""
