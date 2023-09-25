@@ -15,8 +15,9 @@ SERVER_PORT = os.environ.get("SERVER_PORT")
 if not SERVER_HOST or not SERVER_PORT:
     print("Environment variables not set")
     sys.exit(1)
-API_URL = f"http://{SERVER_HOST}:{SERVER_PORT}" # Change to server:3000 when running in docker!
+API_URL = f"http://{SERVER_HOST}:{SERVER_PORT}"
 HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
+
 
 def request(req_type, url, headers, payload, params):
     '''Make a request to the server'''
@@ -30,18 +31,21 @@ def request(req_type, url, headers, payload, params):
         raise ValueError(res.status_code, res.json()["detail"])
     return res.json()
 
+
 def get_context(context_id):
     '''Get context details'''
     url = f"{API_URL}/contexts/{context_id}"
     context = request("GET", url, HEADERS, None, None)
     print(context)
 
+
 def get_context_by_name(context_name):
     '''Get context details, given context name'''
     url = f"{API_URL}/contexts"
-    params = {"context_name":context_name}
+    params = {"context_name": context_name}
     context = request("GET", url, HEADERS, None, params)
     return context
+
 
 def get_all_contexts():
     '''Get all contexts'''
@@ -53,29 +57,32 @@ def get_all_contexts():
     print("------")
     return [c["name"] for c in contexts]
 
+
 def create_context(name, description):
     '''Create a context'''
     url = f"{API_URL}/contexts/"
-    payload = {"name":name, "description":description}
+    payload = {"name": name, "description": description}
     context = request("POST", url, HEADERS, payload, None)
     print(f"Context with name: '{context['name']}' created")
     print(context)
     return context
 
+
 def update_context(context_id, name, description):
     '''Update a context'''
     url = f"{API_URL}/contexts/{context_id}"
-    payload = {"name":name, "description":description}
+    payload = {"name": name, "description": description}
     context = request("PUT", url, HEADERS, payload, None)
     print(f"Context with name: '{context['name']}' updated")
     print(context)
+
 
 def delete_context(context_id):
     '''Delete a context'''
     url = f"{API_URL}/contexts/{context_id}"
     context = request("DELETE", url, HEADERS, None, None)
     print(f"Context with id: '{context['id']}' deleted")
-    # print(context)
+
 
 def get_item(item_id):
     '''Get item details'''
@@ -83,14 +90,16 @@ def get_item(item_id):
     item = request("GET", url, HEADERS, None, None)
     print(item)
 
+
 def get_all_items():
     '''Get all items'''
     url = f"{API_URL}/items/all"
     items = request("GET", url, HEADERS, None, None)
-    print("Items:")
+    print("Items: ")
     for item in items:
         print(f"Item: '{item['message']}, {item['context_id']}'")
     print(f"Items: '{items}'")
+
 
 def get_context_items(context_name):
     '''Get all items in a context'''
@@ -100,23 +109,34 @@ def get_context_items(context_name):
         print(f"Item: '{item['message']} {item['id']}'")
     return [item["id"] for item in context["items"]]
 
+
 def create_item(message, completed, context_name):
     '''Create an item'''
     url = f"{API_URL}/items/"
-    payload = {"message":message, "completed":completed, "context_name":context_name}
+    payload = {
+        "message": message,
+        "completed": completed,
+        "context_name": context_name
+    }
     item = request("POST", url, HEADERS, payload, None)
     print(f"Item with message: '{item['message']}' created")
     print(item)
     return item
 
+
 def update_item(item_id, message, completed, context_name):
     '''Update an item'''
     url = f"{API_URL}/items/{item_id}"
-    payload = {"message":message, "completed":completed, "context_name":context_name}
+    payload = {
+        "message": message,
+        "completed": completed,
+        "context_name": context_name
+    }
     item = request("PUT", url, HEADERS, payload, None)
     print(f"Item with message: '{item['message']}' updated")
     print(item)
     return item
+
 
 def delete_item(item_id):
     '''Delete an item'''
@@ -124,6 +144,7 @@ def delete_item(item_id):
     item = request("DELETE", url, HEADERS, None, None)
     print(f"Item with id: '{item['id']}' deleted")
     print(item)
+
 
 def check_connection():
     """Check if server is running"""
@@ -138,6 +159,7 @@ def check_connection():
     except ValueError as err:
         print("Connection failed", err)
         return False
+
 
 def case1():
     """Create context and add items"""
@@ -162,6 +184,7 @@ def case1():
 
     delete_context(context["id"])
 
+
 def case2():
     """Add item to a context and update it, then delete item"""
 
@@ -169,14 +192,15 @@ def case2():
     assert context["name"] == "Internship"
 
     item = create_item("Presentation first draft", False, "Internship")
-    updated_item = update_item(item["id"], "Presentation first draft", True, "To-Do")
-    # print(item)
-    # print(updated_item)
+    updated_item = update_item(
+        item["id"], "Presentation first draft", True, "To-Do"
+    )
     assert updated_item["context_id"] != item["context_id"]
     delete_item(item["id"])
     items = get_context_items("To-Do")
     assert item["id"] not in items
     print("Case 2 passed")
+
 
 if __name__ == "__main__":
     print("Trying to connect to server")
