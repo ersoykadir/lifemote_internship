@@ -1,17 +1,15 @@
 name: Build Docker Container 
 
-# on:
-#   push:
-#     tags:
-#       - '*'
-#   workflow_dispatch:
-#     inputs:
-#       version_name:
-#         description: 'Used for naming docker container'
-#         required: true
-#         type: string     
-
-on: [push]
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Used for naming docker container'
+        required: true
+        type: string
 
 # job: sent message to slack
 # parallel to versioning
