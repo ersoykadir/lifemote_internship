@@ -9,7 +9,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
 revision: str = '06d743706ab4'
@@ -29,7 +28,14 @@ def upgrade() -> None:
     op.create_index(op.f("ix_users_id"), "users", ["id"])
     op.create_unique_constraint("unique_user_email", "users", ["email"])
     op.add_column("items", sa.Column("owner_id", sa.Integer(), nullable=True))
-    op.create_foreign_key("items_owner_fk", "items", "users", ["owner_id"], ["id"], ondelete="CASCADE")
+    op.create_foreign_key(
+        "items_owner_fk",
+        "items",
+        "users",
+        ["owner_id"],
+        ["id"],
+        ondelete="CASCADE"
+    )
     # ### end Alembic commands ###
 
 

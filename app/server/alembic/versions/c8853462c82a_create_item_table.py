@@ -26,6 +26,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_items_id"), "items", ["id"])
 
+
 def downgrade() -> None:
     op.drop_index(op.f("ix_items_id"), table_name="items")
     op.drop_table("items")

@@ -23,4 +23,12 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.add_column("users", sa.Column("password", sa.VARCHAR(length=255), autoincrement=False, nullable=False))
+    op.add_column(
+        "users",
+        sa.Column(
+            "password",
+            sa.VARCHAR(length=255),
+            autoincrement=False,
+            nullable=False
+        )
+    )
