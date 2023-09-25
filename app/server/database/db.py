@@ -18,13 +18,11 @@ user = os.environ.get("MYSQL_USER")
 password = os.environ.get("MYSQL_PASSWORD")
 db_name = os.environ.get("MYSQL_DB")
 
-SQLALCHEMY_DATABASE_URL = f"""
-    mysql+pymysql://{user}:{password}@{host}:3306/{db_name}
-"""
+DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:3306/{db_name}"
 
 while True:
     try:
-        engine = create_engine(SQLALCHEMY_DATABASE_URL)
+        engine = create_engine(DATABASE_URL)
         SessionLocal = sessionmaker(
             autocommit=False,
             autoflush=False,
@@ -43,7 +41,7 @@ while True:
 def validate_connection(database):
     """Validate database connection"""
     try:
-        print(SQLALCHEMY_DATABASE_URL)
+        print(DATABASE_URL)
         database.connection()
         return True
     except OperationalError as error:
