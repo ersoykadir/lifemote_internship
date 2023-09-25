@@ -21,12 +21,11 @@ host = os.environ['MYSQL_HOST']
 user = os.environ['MYSQL_USER']
 password = os.environ['MYSQL_PASSWORD']
 db_name = os.environ['MYSQL_DB']
-print(host, user, password, db_name)
+# print(host, user, password, db_name)
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{user}:{password}@{host}:3306/{db_name}"
 
-print()
-print(SQLALCHEMY_DATABASE_URL)
+# print(SQLALCHEMY_DATABASE_URL)
 while True:
     try:
         engine = create_engine(
@@ -39,6 +38,7 @@ while True:
         print(err)
         print("Connection to database failed")
         print("Retrying...")
+        # Log this !!
         continue
 
 
