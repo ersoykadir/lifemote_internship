@@ -8,8 +8,10 @@ from sqlalchemy.orm import relationship
 
 from database.db import Base
 
+
 class Item(Base):
     """Item Model"""
+
     __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)
