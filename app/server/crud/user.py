@@ -10,16 +10,25 @@ from schemas import user as user_schema
 
 from .context import context
 
+
 class User:
     """User CRUD"""
 
     def get_user(self, database: Session, user_id: int):
         """Get user by id"""
-        return database.query(user_model.User).filter(user_model.User.id == user_id).first()
+        return (
+            database.query(user_model.User)
+            .filter(user_model.User.id == user_id)
+            .first()
+        )
 
     def get_user_by_email(self, database: Session, email: str):
         """Get user by email"""
-        return database.query(user_model.User).filter(user_model.User.email == email).first()
+        return (
+            database.query(user_model.User)
+            .filter(user_model.User.email == email)
+            .first()
+        )
 
     def get_users(self, database: Session, skip: int = 0, limit: int = 100):
         """Get all users"""
@@ -33,5 +42,6 @@ class User:
         database.refresh(db_user)
         context.init_user_contexts(database, user_id=db_user.id)
         return db_user
+
 
 user = User()
