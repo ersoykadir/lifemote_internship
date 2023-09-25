@@ -7,7 +7,7 @@ import os
 from models.item import Item
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 HEADERS = {
-    "Authorization": "Bearer {ACCESS_TOKEN}"
+    "Authorization": f"Bearer {ACCESS_TOKEN}"
 }
 ITEMS1 = [
     {

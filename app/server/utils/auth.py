@@ -38,10 +38,12 @@ def create_access_token(data: dict, expire: datetime = None):
 def decode_access_token(token: str):
     """Decode access token"""
     try:
-        # token = Authorization.split(" ")[1]
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError as exc:
+        # cr = credentials_exception
+        # cr.detail = f"Could not validate credentials, token is not valid, {token}"
+        # Log this error
         raise credentials_exception from exc
 
 
@@ -53,10 +55,19 @@ def validate_token(token: Annotated[str, HTTPBearer] = Depends(oauth2_scheme)):
     if email == "admin":
         return email
     if email is None:
+        # cr = credentials_exception
+        # cr.detail = "Could not validate credentials, email is None"
+        # Log this error
         raise credentials_exception
     if exp is None:
+        # cr = credentials_exception
+        # cr.detail = "Could not validate credentials, exp is None"
+        # Log this error
         raise credentials_exception
     if datetime.utcnow() > datetime.fromtimestamp(exp):
+        # cr = credentials_exception
+        # cr.detail = "Could not validate credentials, token expired"
+        # Log this error
         raise credentials_exception
     return email
 
