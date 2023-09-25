@@ -16,7 +16,7 @@ sys.path.insert(0, backend_path)
 from main import app
 from routers import extras
 from tests.test_utils import extras as extras_utils
-from tests.test_utils.utils import check_response_validity
+from tests.test_utils.extras_utils import check_response_validity
 
 load_dotenv()
 client = TestClient(app)
