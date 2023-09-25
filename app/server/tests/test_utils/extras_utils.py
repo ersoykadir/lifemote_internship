@@ -3,8 +3,10 @@ Kadir Ersoy
 Internship Project
 Utils for extras tests
 """
+
+
 def check_response_validity(response, expected_result, expected_status_code):
-    """ Check the validity of the response"""
+    """Check the validity of the response"""
     # Check the response status code
     assert response.status_code == expected_status_code
 

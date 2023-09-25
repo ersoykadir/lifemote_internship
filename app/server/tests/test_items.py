@@ -14,11 +14,10 @@ client = TestClient(app)
 TEST_ITEM = None
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 print(ACCESS_TOKEN)
-HEADERS = {
-    "Authorization": f"Bearer {ACCESS_TOKEN}"
-}
+HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
-# The following tests are commented out because they require a database running.
+# The following tests are commented out
+# because they require a database running.
 # They can be used later on for integration testing,
 # with not only single requests but a set of requests for a specific use case.
 
@@ -58,7 +57,9 @@ HEADERS = {
 #         "completed": False,
 #         "context_name": "To-Do"
 #     }
-#     response = client.put(f"/items/{TEST_ITEM['id']}", json=payload, headers=HEADERS)
+#     response = client.put(
+#         f"/items/{TEST_ITEM['id']}", json=payload, headers=HEADERS
+#     )
 #     assert response.status_code == 200
 #     assert response.json()["message"] == payload["message"]
 #     assert response.json()["id"] == TEST_ITEM["id"]

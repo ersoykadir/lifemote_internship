@@ -8,6 +8,7 @@ from main import app
 
 client = TestClient(app)
 
+
 def test_root():
     """Test root"""
     response = client.get("/")
