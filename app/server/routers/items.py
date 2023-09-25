@@ -19,16 +19,26 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/all", response_model=List[schemas.Item], status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/all",
+    response_model=List[schemas.Item],
+    status_code=status.HTTP_200_OK
+)
 def read_items_for_user(
-    database: Session = Depends(get_db), user: schemas.User = Depends(get_current_user)
+    database: Session = Depends(get_db),
+    user: schemas.User = Depends(get_current_user)
 ):
     """Get all items for a user"""
     db_items = crud.item.get_items_by_user(database, user_id=user.id)
     return db_items
 
 
-@router.get("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{item_id}",
+    response_model=schemas.Item,
+    status_code=status.HTTP_200_OK
+)
 def read_item(
     item_id: int,
     database: Session = Depends(get_db),
@@ -45,7 +55,11 @@ def read_item(
     return db_item
 
 
-@router.post("/", response_model=schemas.Item, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=schemas.Item,
+    status_code=status.HTTP_201_CREATED
+)
 def create_item_for_user(
     item: schemas.ItemCreate,
     database: Session = Depends(get_db),
@@ -63,7 +77,11 @@ def create_item_for_user(
     )
 
 
-@router.put("/{item_id}", response_model=schemas.Item, status_code=status.HTTP_200_OK)
+@router.put(
+    "/{item_id}",
+    response_model=schemas.Item,
+    status_code=status.HTTP_200_OK
+)
 def update_item(
     item_id: int,
     item: schemas.ItemCreate,
@@ -90,7 +108,7 @@ def update_item(
 def delete_item(
     item_id: int,
     database: Session = Depends(get_db),
-    user: schemas.User = Depends(get_current_user)
+    user: schemas.User = Depends(get_current_user),
 ):
     """Delete an item"""
 

@@ -22,7 +22,8 @@ router = APIRouter(
 
 @router.get("/all", response_model=List[schemas.Context])
 def read_contexts_for_user(
-    database: Session = Depends(get_db), user: schemas.User = Depends(get_current_user)
+    database: Session = Depends(get_db),
+    user: schemas.User = Depends(get_current_user)
 ):
     """Get all contexts for a user"""
     db_user = crud.user.get_user(database, user_id=user.id)
@@ -79,7 +80,7 @@ def create_context_for_user(
     )
     if db_context:
         raise HTTPException(status_code=400, detail="Context already exists!")
-    return crud.context.create_context(database, context_data=context, user_id=user.id)
+    return crud.context.create_context(database, context, user.id)
 
 
 @router.put("/{context_id}", response_model=schemas.Context)
@@ -102,7 +103,9 @@ def update_context(
     if check_context:
         raise HTTPException(status_code=400, detail="Context already exists!")
     # update_data = context.dict(exclude_unset=True)
-    return crud.context.update_context(database, context_id=context_id, context_data=context)
+    return crud.context.update_context(
+        database, context_id=context_id, context_data=context
+    )
 
 
 @router.delete("/{context_id}", response_model=schemas.Context)

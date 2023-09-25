@@ -18,11 +18,15 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, database: Session = Depends(get_db)):
+def read_users(
+    skip: int = 0, limit: int = 100, database: Session = Depends(get_db)
+):
     """Get all users"""
     users = crud.user.get_users(database, skip=skip, limit=limit)
     return users
+
 
 @router.get("/{user_id}", response_model=schemas.User)
 def read_user(user_id: int, database: Session = Depends(get_db)):

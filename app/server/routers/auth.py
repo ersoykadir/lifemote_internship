@@ -18,10 +18,12 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/google/")
 def register_user():
     """Redirects user to google login page"""
     return RedirectResponse(url=google.get_google_auth_url())
+
 
 # Get user data from identity provider using the code
 # Save user data in database,
