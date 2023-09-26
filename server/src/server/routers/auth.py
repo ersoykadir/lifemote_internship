@@ -7,10 +7,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-import crud
-import schemas
-from database.db import get_db
-from utils import google, auth
+import server.crud as crud
+import server.schemas as schemas
+from server.database.db import get_db
+from server.utils import google, auth
 
 router = APIRouter(
     prefix="/auth",
@@ -41,9 +41,9 @@ def oauth2callback(state, code, database: Session = Depends(get_db)):
     user_data, exp = google.get_user_data_from_id_token(credentials)
 
     # Create user
-    user = crud.user.get_user_by_email(database, email=user_data["email"])
+    user = crud.user_instance.get_user_by_email(database, email=user_data["email"])
     if not user:
-        user = crud.user.create_user(database, schemas.UserBase(**user_data))
+        user = crud.user_instance.create_user(database, schemas.user.UserBase(**user_data))
 
     # Create token
     token = auth.create_access_token(data={"sub": user.email}, expire=exp)

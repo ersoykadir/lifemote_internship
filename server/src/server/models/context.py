@@ -6,7 +6,7 @@ Context Model
 from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from database.db import Base
+from server.database.db import Base
 
 
 class Context(Base):

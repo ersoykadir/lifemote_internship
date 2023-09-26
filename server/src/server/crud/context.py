@@ -3,11 +3,12 @@ Kadir Ersoy
 Internship Project
 Context CRUD
 """
+from typing import Union
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from models import context as context_model
-from schemas import context as context_schema
+from server.models import context as context_model
+from server.schemas import context as context_schema
 
 
 class Context:
@@ -25,7 +26,7 @@ class Context:
         return db_context
 
     def get_context_by_name_for_user(
-        self, database: Session, context_name: str, user_id: int
+        self, database: Session, context_name: Union[str, None], user_id: int
     ):
         """Get context by name for user"""
         db_context = (
@@ -100,4 +101,3 @@ class Context:
         return db_context
 
 
-context = Context()

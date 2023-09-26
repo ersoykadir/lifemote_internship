@@ -3,15 +3,16 @@ Kadir Ersoy
 Internship Project
 Extras Router
 """
-from typing import List
+from typing import List, Any
 from pydantic import BaseModel
 from fastapi import APIRouter, status, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
-import crud
-from database.db import get_db
-from utils.auth import get_current_user
-from models.item import Item
+import server.crud as crud
+import server.schemas as schemas
+from server.database.db import get_db
+from server.utils.auth import get_current_user
+from server.models.item import Item
 
 router = APIRouter(
     prefix="/extras",
@@ -30,7 +31,7 @@ router = APIRouter(
 class SortBase(BaseModel):
     """Context base schema"""
 
-    items: List
+    items: List[Any]
     property_name: str
 
 
@@ -44,24 +45,24 @@ class SortBasev1(BaseModel):
 class AppendBase(BaseModel):
     """Context base schema"""
 
-    items1: List
-    items2: List
+    items1: List[Any]
+    items2: List[Any]
 
 
 class FilterCompletionBase(BaseModel):
     """Context base schema"""
 
-    items: List
+    items: List[Any]
     completed: bool
 
 
 def get_context_items(
     input_data: SortBasev1,
-    user: str = Depends(get_current_user),
+    user: schemas.user.User = Depends(get_current_user),
     database: Session = Depends(get_db),
 ):
     """Dependency"""
-    items = crud.item.get_items_by_context_for_user(
+    items = crud.item_instance.get_items_by_context_for_user(
         database, user_id=user.id, context_id=input_data.context_id
     )
     return items
@@ -115,7 +116,7 @@ def sort_itemsv1(
 
 
 @router.post("/add_two_lists")
-def add_two_lists(list1: list, list2: list):
+def add_two_lists(list1: list[Any], list2: list[Any]):
     """Add two lists"""
     return [list1[i] + list2[i] for i in range(len(list1))]
 

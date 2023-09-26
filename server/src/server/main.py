@@ -8,7 +8,13 @@ import os
 import uvicorn
 
 from fastapi import FastAPI
-from routers import users, items, contexts, auth, extras
+from server.routers import users, items, contexts, auth, extras
+
+HOST = os.environ.get("HOST")
+PORT = os.environ.get("PORT")
+
+if HOST is None or PORT is None:
+    raise ValueError("HOST and PORT environment variables must be set.")
 
 app = FastAPI()
 
@@ -28,7 +34,7 @@ async def root():
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host=os.environ.get("HOST"),
-        port=int(os.environ.get("PORT")),
+        host=HOST,
+        port=int(PORT),
         reload=True,
     )

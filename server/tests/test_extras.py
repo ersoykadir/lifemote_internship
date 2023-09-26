@@ -3,20 +3,17 @@ Kadir Ersoy
 Internship Project
 Test Item Router
 """
-import sys
-import os
+
 import pytest
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 
-# # Add the top-level directory (backend) to sys.path
-# backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-# sys.path.insert(0, backend_path)
 
-from main import app
-from routers import extras
-from tests.test_utils import extras_data
-from tests.test_utils.extras_utils import check_response_validity
+from server.main import app
+from server.routers import extras
+
+from .test_utils import extras_data
+from .test_utils.extras_utils import check_response_validity
 
 load_dotenv()
 client = TestClient(app)

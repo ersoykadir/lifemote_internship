@@ -6,10 +6,10 @@ Item CRUD
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from models import item as item_model
-from schemas import item as item_schema
+from server.models import item as item_model
+from server.schemas import item as item_schema
 
-from .context import context
+# from . import context_instance
 
 
 class Item:
@@ -76,9 +76,9 @@ class Item:
         db_item = self.get_item(database, item_id=item_id)
         db_item.message = item_data.message
         db_item.completed = item_data.completed
-        db_item.context_id = context.get_context_by_name_for_user(
-            database, item_data.context_name, db_item.owner_id
-        ).id
+        # db_item.context_id = context_instance.get_context_by_name_for_user(
+        #     database, item_data.context_name, db_item.owner_id
+        # ).id
         database.commit()
         database.refresh(db_item)
         return db_item
@@ -90,5 +90,3 @@ class Item:
         database.commit()
         return db_item
 
-
-item = Item()

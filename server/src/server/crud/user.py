@@ -5,10 +5,10 @@ User CRUD
 """
 from sqlalchemy.orm import Session
 
-from models import user as user_model
-from schemas import user as user_schema
+from server.models import user as user_model
+from server.schemas import user as user_schema
 
-from .context import context
+# from . import context_instance
 
 
 class User:
@@ -40,8 +40,7 @@ class User:
         database.add(db_user)
         database.commit()
         database.refresh(db_user)
-        context.init_user_contexts(database, user_id=db_user.id)
+        # context_instance.init_user_contexts(database, user_id=int(db_user.id))
         return db_user
 
 
-user = User()

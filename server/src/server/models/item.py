@@ -6,7 +6,7 @@ Item Model
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from database.db import Base
+from server.database.db import Base
 
 
 class Item(Base):

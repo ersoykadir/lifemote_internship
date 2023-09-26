@@ -4,7 +4,7 @@ Internship Project
 Data&Utils for extras route tests
 """
 import os
-from models.item import Item
+from server.models.item import Item
 
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 
@@ -126,8 +126,8 @@ sort_itemsv1_test_data = [
 
 # Test data for filter_list
 filter_list_test_data = [
-    (ITEMS3, "completed", False, ITEMS3_FILTERED_FALSE, 200),
-    (ITEMS3, "completed", True, ITEMS3_FILTERED_TRUE, 200),
+    (ITEMS3, False, ITEMS3_FILTERED_FALSE, 200),
+    (ITEMS3, True, ITEMS3_FILTERED_TRUE, 200),
     ([], False, [], 200),
     ([], True, [], 200),
     ("Hello World", False, "Input should be a valid list", 422),
