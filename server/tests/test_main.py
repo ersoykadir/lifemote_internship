@@ -4,7 +4,7 @@ Internship Project
 Test Main Router
 """
 from fastapi.testclient import TestClient
-from main import app
+from server.main import app
 
 client = TestClient(app)
 
