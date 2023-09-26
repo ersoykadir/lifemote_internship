@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 # backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 # sys.path.insert(0, backend_path)
 
-from server.main import app
+from main import app
 from routers import extras
 from tests.test_utils import extras_data
 from tests.test_utils.extras_utils import check_response_validity
