@@ -10,9 +10,12 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    env:
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      HOST: 0.0.0.0
+      PORT: 3000
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
