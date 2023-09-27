@@ -22,5 +22,5 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        cd server/src
-        pylint --rcfile=.pylintrc $(git ls-files '*.py' | grep -v 'alembic')
+        cd server
+        pylint --rcfile=.pylintrc $(git ls-files 'src/*.py' | grep -v 'alembic')
