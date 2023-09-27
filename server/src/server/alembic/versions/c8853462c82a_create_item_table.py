@@ -1,7 +1,7 @@
 """create item table
 
 Revision ID: c8853462c82a
-Revises: 
+Revises:
 Create Date: 2023-08-08 14:14:53.447008
 
 """
