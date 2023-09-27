@@ -18,26 +18,14 @@ jobs:
       PORT: 3000
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
+    - name: Build tester docker
+      run: docker build -f ./server/Dockerfile_test -t lifemote_internship-unittest ./server
+    - name: Run the tests docker
+      run: docker run --name lifemote_internship-unittest-1 lifemote_internship-unittest:latest
+    - name: Unit test results
+      run: echo $(docker logs lifemote_internship-unittest-1)
+    - name: Check the exit status
       run: |
-        python -m pip install --upgrade pip
-        cd server
-        if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
-        pip install -e .
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest -v -s 
-    # fail action if not all tests passed
-    # - name: Generate Coverage Report  
-    #   run: |  
-    #     coverage report -m
+        export container_id=$(docker inspect --format="{{.Id}}" lifemote_internship-unittest-1)
+        export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
+        if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
