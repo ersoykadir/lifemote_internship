@@ -42,5 +42,3 @@ class User:
         database.refresh(db_user)
         # context_instance.init_user_contexts(database, user_id=int(db_user.id))
         return db_user
-
-
