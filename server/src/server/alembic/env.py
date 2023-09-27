@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -5,10 +6,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# get database url from environment variables
-
-import os
 from dotenv import load_dotenv
+from server.database.db import Base
+
+# get database url from environment variables
 load_dotenv()
 host = os.getenv('MYSQL_HOST')
 user = os.getenv('MYSQL_USER')
@@ -32,7 +33,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from database.db import Base
 target_metadata = Base.metadata
 # target_metadata = None
 
