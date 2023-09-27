@@ -4,12 +4,10 @@ Internship Project
 Test Item Router
 """
 import os
-from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 
 from server.main import app
 
-load_dotenv()
 client = TestClient(app)
 
 TEST_ITEM = None

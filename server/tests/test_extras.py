@@ -5,7 +5,6 @@ Test Item Router
 """
 
 import pytest
-from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 
 
@@ -15,7 +14,6 @@ from server.routers import extras
 from .test_utils import extras_data
 from .test_utils.extras_utils import check_response_validity
 
-load_dotenv()
 client = TestClient(app)
 
 
