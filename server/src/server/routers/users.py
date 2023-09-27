@@ -7,8 +7,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-import server.crud as crud
-import server.schemas as schemas
+from server import crud
+from server import schemas
 from server.database.db import get_db
 
 router = APIRouter(

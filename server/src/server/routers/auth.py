@@ -7,8 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-import server.crud as crud
-import server.schemas as schemas
+from server import crud
+from server import schemas
 from server.database.db import get_db
 from server.utils import google, auth
 

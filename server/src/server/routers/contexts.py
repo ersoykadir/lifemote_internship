@@ -7,8 +7,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-import server.crud as crud
-import server.schemas as schemas
+from server import crud
+from server import schemas
 from server.database.db import get_db
 from server.utils.auth import get_current_user, validate_token
 

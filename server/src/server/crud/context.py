@@ -99,5 +99,3 @@ class Context:
         database.delete(db_context)
         database.commit()
         return db_context
-
-

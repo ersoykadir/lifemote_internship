@@ -89,4 +89,3 @@ class Item:
         database.delete(db_item)
         database.commit()
         return db_item
-

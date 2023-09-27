@@ -8,8 +8,8 @@ from pydantic import BaseModel
 from fastapi import APIRouter, status, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
-import server.crud as crud
-import server.schemas as schemas
+from server import crud
+from server import schemas
 from server.database.db import get_db
 from server.utils.auth import get_current_user
 from server.models.item import Item
