@@ -9,5 +9,6 @@ if [ -n "$MYSQL_HOST" ]; then
 fi
 
 # Run the main container command.
+cd src/server
 alembic upgrade head
 python main.py
