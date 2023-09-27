@@ -10,12 +10,13 @@ COPY . .
 EXPOSE 5000
 ENTRYPOINT ["./entrypoint.sh"]
 
-# docker build -t app-client:latest ./app/client
+# docker build -t lifemote_internship-client:latest ./client
 
-# docker run --name app-client-1 \
+# docker run --name lifemote_internship-client-1 \
 #     -dp 5000:5000 \
-#     --network=app_container_network \
+#     --network=lifemote_internship_container_network \
+#     -e ACCESS_TOKEN_SECRET=secret \
 #     -e SERVER_HOST=server \
 #     -e SERVER_PORT=3000 \
 #     -e TEST_CASE=1 \
-#     app-client:latest
+#     lifemote_internship-client:latest

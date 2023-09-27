@@ -5,13 +5,15 @@ ADD requirements.txt .
 RUN pip install -r requirements.txt
 # Layer for source code
 COPY . .
+# Layer for packaging
+RUN pip install -e . 
 EXPOSE 3000
 
 ENTRYPOINT ["./entrypoint.sh"]
 
-# docker build -t app-server:latest ./app/server
+# docker build -t lifemote_internship-server:latest ./server
 
-# docker run --name app-mysql-1 \
+# docker run --name lifemote_internship-mysql-1 \
 #     -dp 0.0.0.0:3306:3306 \
 #     --network app_my-network --network-alias mysql\
 #     -v todo-mysql-data:/var/lib/mysql \
@@ -19,7 +21,7 @@ ENTRYPOINT ["./entrypoint.sh"]
 #     -e MYSQL_DATABASE=items \
 #     mysql:8.0
 
-# docker run --name app-server-1 \
+# docker run --name lifemote_internship-server-1 \
 #   -dp 0.0.0.0:3000:3000 \
 #   --network app_my-network --network-alias server \
 #   -e HOST=0.0.0.0 \
