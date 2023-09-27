@@ -24,6 +24,7 @@ jobs:
         python -m pip install --upgrade pip
         cd server
         if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+        pip install -e .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
