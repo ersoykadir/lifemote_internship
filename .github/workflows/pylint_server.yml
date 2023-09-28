@@ -17,10 +17,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        cd app/server
+        cd server
         pip install pylint
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        cd app/server
-        pylint --rcfile=.pylintrc $(git ls-files '*.py' | grep -v 'alembic')
+        cd server
+        pylint --rcfile=.pylintrc $(git ls-files 'src/*.py' | grep -v 'alembic')

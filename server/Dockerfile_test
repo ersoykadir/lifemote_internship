@@ -1,0 +1,17 @@
+
+FROM python:3.10-alpine
+WORKDIR /app
+# Layer for dependencies
+ADD requirements.txt .
+ADD requirements_dev.txt .
+RUN pip install -r requirements_dev.txt
+# Layer for source code
+COPY . .
+# Layer for packaging
+RUN pip install -e .
+ENTRYPOINT ["pytest", "-v", "-s"]
+
+# docker build -f ./server/Dockerfile_test -t lifemote_internship-unittest ./server
+
+# docker run --name lifemote_internship-unittest-1 \
+#     lifemote_internship-unittest:latest
