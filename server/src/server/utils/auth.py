@@ -17,7 +17,9 @@ from server.crud import user_instance
 
 oauth2_scheme = HTTPBearer()
 
-SECRET_KEY = os.environ.get("SECRET_KEY") or None
+SECRET_KEY = os.environ["SECRET_KEY"]
+if SECRET_KEY is None:
+    raise ValueError("SECRET_KEY is not set")
 ALGORITHM = "HS256"
 
 credentials_exception = HTTPException(
