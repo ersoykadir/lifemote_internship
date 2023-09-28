@@ -27,7 +27,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: Run docker compose
       run: |
-        cd app
         docker compose up --detach
     - name: List running docker containers
       id: list_dockers
@@ -51,36 +50,35 @@ jobs:
     - uses: actions/checkout@v3
     - name: Wake containers up
       run: |
-        cd app
         docker compose up --detach
     - name: Build client image
       run: |
-        docker build -t app-client:latest ./app/client
+        docker build -t lifemote_internship-client:latest ./client
     - name: List existing containers
       run: |
         echo $(docker ps --format '{{.Names}}')
         export count=$(docker ps --format '{{.Names}}' | wc -l)
-        echo $(docker logs app-server-1)
+        echo $(docker logs lifemote_internship-server-1)
         if [[ $count == 2 ]]; then exit 0; else exit 1; fi
     - name: Run client
       run: |
         sleep 5s
         docker network ls
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=${{secrets.ACCESS_TOKEN}} -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 app-client:latest
+        docker run --name lifemote_internship-client-1 -dp 5000:5000 --network=lifemote_internship_container_network -e ACCESS_TOKEN=${{secrets.ACCESS_TOKEN}} -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=1 lifemote_internship-client:latest
     - name: docker output debug
       run: |
         sleep 5s
-        echo $(docker logs app-client-1)
+        echo $(docker logs lifemote_internship-client-1)
         docker ps -a
     - name: Check if client was successful
       run: |
-        export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
+        export container_id=$(docker inspect --format="{{.Id}}" lifemote_internship-client-1)
         export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
         echo $(docker ps --format '{{.Names}}')
         echo "count=$(docker ps --format '{{.Names}}' | wc -l)"
         echo $container_id
         echo $result_case
-        echo $(docker logs app-client-1)
+        echo $(docker logs lifemote_internship-client-1)
         docker ps -a
         if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
 
@@ -97,21 +95,20 @@ jobs:
     - uses: actions/checkout@v3
     - name: Wake containers up
       run: |
-        cd app
         docker compose up --detach
     - name: List existing containers
       run: echo $(docker ps --format '{{.Names}}')
     - name: Build client image
       run: |
-        docker build -t app-client:latest ./app/client
+        docker build -t lifemote_internship-client:latest ./client
     - name: Run client
       run: |
-        docker run --name app-client-1 -dp 5000:5000 --network=app_container_network -e ACCESS_TOKEN=$ACCESS_TOKEN -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 app-client:latest
+        docker run --name lifemote_internship-client-1 -dp 5000:5000 --network=lifemote_internship_container_network -e ACCESS_TOKEN=${{secrets.ACCESS_TOKEN}} -e SERVER_HOST=server -e SERVER_PORT=3000 -e TEST_CASE=2 lifemote_internship-client:latest
     - name: docker output debug
-      run: echo $(docker logs app-client-1)
+      run: echo $(docker logs lifemote_internship-client-1)
     - name: Check if client was successful
       run: |
-        export container_id=$(docker inspect --format="{{.Id}}" app-client-1)
+        export container_id=$(docker inspect --format="{{.Id}}" lifemote_internship-client-1)
         export result_case=$(docker inspect $(echo $container_id) --format={{.State.ExitCode}})
         if [[ $result_case == 0 ]]; then exit 0; else exit 1; fi
   
@@ -139,8 +136,8 @@ jobs:
         echo "version_name=$version_name" >> "$GITHUB_ENV"
     - name: Build images for client and server
       run: |
-        docker build -t $DOCKER_USER/internship-client:$version_name ./app/client
-        docker build -t $DOCKER_USER/internship-server:$version_name ./app/server
+        docker build -t $DOCKER_USER/internship-client:$version_name ./client
+        docker build -t $DOCKER_USER/internship-server:$version_name ./server
     - name: Tag & push to dockerhub
       run: |
         docker push $DOCKER_USER/internship-client:$version_name
