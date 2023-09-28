@@ -14,6 +14,7 @@ jobs:
     env:
       GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
       GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
       HOST: 0.0.0.0
       PORT: 3000
     steps:
@@ -21,7 +22,7 @@ jobs:
     - name: Build tester docker
       run: docker build -f ./server/Dockerfile_test -t lifemote_internship-unittest ./server
     - name: Run the tests docker
-      run: docker run --name lifemote_internship-unittest-1 -e HOST=server -e PORT=3000 -e GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID -e GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET lifemote_internship-unittest:latest
+      run: docker run --name lifemote_internship-unittest-1 -e HOST=server -e PORT=3000 -e GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID -e GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET -e SECRET_KEY=$SECRET_KEY lifemote_internship-unittest:latest
     - name: Unit test results
       run: echo $(docker logs lifemote_internship-unittest-1)
     - name: Check the exit status
