@@ -4,13 +4,18 @@ Internship Project
 Client for testing the API
 """
 import os
-import time
+import sys
 import requests
 from dotenv import load_dotenv
 load_dotenv()
 
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
-API_URL = "http://localhost:3000" # Change to server:3000 when running in docker!
+SERVER_HOST = os.environ.get("SERVER_HOST")
+SERVER_PORT = os.environ.get("SERVER_PORT")
+if not SERVER_HOST or not SERVER_PORT:
+    print("Environment variables not set")
+    sys.exit(1)
+API_URL = f"http://{SERVER_HOST}:{SERVER_PORT}" # Change to server:3000 when running in docker!
 HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
 def request(req_type, url, headers, payload, params):
@@ -137,6 +142,10 @@ def check_connection():
 def case1():
     """Create context and add items"""
 
+    all_contexts = get_all_contexts()
+    if "Internship" in all_contexts:
+        delete_context(get_context_by_name("Internship")["id"])
+
     context_name = "Internship"
     context_description = "Internship tasks"
     item_messages = ["Get Multinet Card", "Refactor Business Logic"]
@@ -171,17 +180,38 @@ def case2():
 
 if __name__ == "__main__":
     print("Trying to connect to server")
-    while not check_connection():
-        time.sleep(5)
+    # try_count = 0
+    # while not check_connection() and try_count < 5:
+    #     time.sleep(1)
+    #     try_count += 1
+    # # Trycount and fail after 5 tries
+    # if try_count == 5:
+    #     print("Failed to connect to server")
+    #     sys.exit(1)
 
-    print(ACCESS_TOKEN)
-    all_contexts = get_all_contexts()
-    if "Internship" in all_contexts:
-        delete_context(get_context_by_name("Internship")["id"])
-
-    case1()
-
-    case2()
+    # Test case from environment variable
+    TEST_CASE = os.environ.get("TEST_CASE")
+    print(f"Running test case {TEST_CASE}")
+    if TEST_CASE == "1":
+        case1()
+    elif TEST_CASE == "2":
+        case2()
+    else:
+        print("Invalid test case given, defaulting to case 1")
+        case1()
+    # while True:
+    #     print("1. Create context and add items")
+    #     print("2. Add item to a context and update it, then delete item")
+    #     print("3. Exit")
+    #     choice = input("Enter choice: ")
+    #     if choice == "1":
+    #         case1()
+    #     elif choice == "2":
+    #         case2()
+    #     elif choice == "3":
+    #         break
+    #     else:
+    #         print("Invalid choice")
 
     # create context(with no items) and try to delete => WORKS
     # context = create_context("trial1", "trial1")
