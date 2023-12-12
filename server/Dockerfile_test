@@ -9,7 +9,7 @@ RUN pip install -r requirements_dev.txt
 COPY . .
 # Layer for packaging
 RUN pip install -e .
-ENTRYPOINT ["pytest", "-v", "-s"]
+ENTRYPOINT ["pytest", "--cov=server", "-v", "-s"]
 
 # docker build -f ./server/Dockerfile_test -t lifemote_internship-unittest ./server
 
